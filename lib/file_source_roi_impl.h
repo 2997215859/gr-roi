@@ -223,6 +223,8 @@ namespace gr {
 
         void do_update();
 
+        bool tx_file;
+
      public:
       file_source_roi_impl(size_t itemsize, const char *filename, bool repeat, bool tx_file);
       ~file_source_roi_impl();
@@ -236,6 +238,9 @@ namespace gr {
         bool seek(long seek_point, int whence);
         void open(const char *filename, bool repeat);
         void close();
+
+        void set_tx_file(bool _tx_file);
+        void get_tx_file();
     };
 
   } // namespace roi
