@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.8.11">
+  <compound refid="classgr_1_1roi_1_1file__source__roi" kind="class"><name>gr::roi::file_source_roi</name>
+    <member refid="classgr_1_1roi_1_1file__source__roi_1abc873386bb3740c6169b68f3c04032f5" kind="typedef"><name>sptr</name></member>
+    <member refid="classgr_1_1roi_1_1file__source__roi_1ac02e3b6cde5ba9b9e231d6b951b7eb66" kind="function"><name>make</name></member>
+  </compound>
+  <compound refid="namespacegr" kind="namespace"><name>gr</name>
+  </compound>
+  <compound refid="namespacegr_1_1roi" kind="namespace"><name>gr::roi</name>
+  </compound>
+  <compound refid="namespacestd" kind="namespace"><name>std</name>
+  </compound>
+  <compound refid="api_8h" kind="file"><name>api.h</name>
+    <member refid="api_8h_1a690bed195c8500952102acd01e123616" kind="define"><name>ROI_API</name></member>
+  </compound>
+  <compound refid="file__source__roi_8h" kind="file"><name>file_source_roi.h</name>
+  </compound>
+  <compound refid="dir_d44c64559bbebec7f509842c48db8b23" kind="dir"><name>/home/ruiy/store/ROI/GModule/gr-roi/include</name>
+  </compound>
+  <compound refid="dir_173cce590344d9447a64bdada022389c" kind="dir"><name>/home/ruiy/store/ROI/GModule/gr-roi/include/roi</name>
+  </compound>
+</doxygenindex>

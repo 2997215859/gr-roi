@@ -251,7 +251,7 @@ namespace gr {
       : gr::sync_block("file_source_roi",
               gr::io_signature::make(0, 0, 0),
               gr::io_signature::make(1, 1, itemsize)),
-        itemsize(itemsize), fp(0), new_fp(0), repeat(repeat), update(false), tx_file(tx_file)
+        itemsize(itemsize), fp(0), new_fp(0), repeat(repeat), updated(false), tx_file(tx_file)
 
     {
         open(filename, repeat);
@@ -293,15 +293,14 @@ namespace gr {
       void file_source_roi_impl::do_update() {
           if (updated) {
               gr::thread::scoped_lock lock(fp_mutex);
-          }
+              if (fp) {
+                  fclose(fp);
+              }
 
-          if (fp) {
-              fclose(fp);
+              fp = new_fp;
+              new_fp = 0;
+              updated = false;
           }
-
-          fp = new_fp;
-          new_fp = 0;
-          d_updated = false;
       }
       /**
        * 打开文件, 得到文件指针new_fp
@@ -312,7 +311,7 @@ namespace gr {
           gr::thread::scoped_lock lock(fp_mutex);
 
           int fd;
-          if (fd = ::open(filename, O_RDONLY | OUR_O_LARGEFILE | OUR_O_BINARY)) {
+          if ((fd = ::open(filename, O_RDONLY | OUR_O_LARGEFILE | OUR_O_BINARY)) < 0) {
             perror(filename);
               throw std::runtime_error("can't open file");
           }
@@ -350,19 +349,29 @@ namespace gr {
           }
 
           if (_tx_file == true && tx_file == false) {
-              updated == true;
+              gr::thread::scoped_lock lock(fp_mutex);
+              // 每次从false到true的状态, 需要从头开始发射文件, 因此需要置位fp的指针
+
+              if (fseek((FILE*)fp, 0, SEEK_SET) == -1) { // 将指针指向开头处
+                  fprintf(stderr, "[%s] fseek failed\n", __FILE__);
+                  exit(-1);
+              }
           }
 
           tx_file = _tx_file;
       }
 
-      void file_source_roi_impl::get_tx_file() {
+      bool file_source_roi_impl::get_tx_file() {
           return tx_file;
       }
 
       int file_source_roi_impl::work(int noutput_items, gr_vector_const_void_star &input_items,
                                      gr_vector_void_star &output_items) {
 
+
+          if (tx_file == false && repeat == false) {
+              throw std::runtime_error("tx_file and repeat shouldn't be false meantime");
+          }
 
           char *o = (char*)output_items[0];
           int i;
@@ -397,7 +406,7 @@ namespace gr {
            */
 
           do_update();
-          if (fp_== NULL) {
+          if (fp== NULL) {
               throw std::runtime_error("work with file not open");
           }
 
@@ -409,7 +418,7 @@ namespace gr {
           gr::thread::scoped_lock lock(fp_mutex);
           while (size) {
               i = fread(o, itemsize, size, (FILE*)fp);
-              size = -i;
+              size -= i;
               o += i * itemsize;
 
               if (size == 0) {
@@ -434,7 +443,7 @@ namespace gr {
 
               if (fseek((FILE*)fp, 0, SEEK_SET) == -1) {
                   fprintf(stderr, "[%s] fseek failed\n", __FILE__);
-                  exit(01);
+                  exit(-1);
               }
           }
 

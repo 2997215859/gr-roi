@@ -240,7 +240,7 @@ namespace gr {
         void close();
 
         void set_tx_file(bool _tx_file);
-        void get_tx_file();
+        bool get_tx_file();
     };
 
   } // namespace roi

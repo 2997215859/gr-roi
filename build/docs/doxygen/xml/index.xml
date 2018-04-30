@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.8.11">
+  <compound refid="classgr_1_1roi_1_1file__source__roi" kind="class"><name>gr::roi::file_source_roi</name>
+    <member refid="classgr_1_1roi_1_1file__source__roi_1abc873386bb3740c6169b68f3c04032f5" kind="typedef"><name>sptr</name></member>
+    <member refid="classgr_1_1roi_1_1file__source__roi_1ac02e3b6cde5ba9b9e231d6b951b7eb66" kind="function"><name>make</name></member>
+  </compound>
+  <compound refid="classgr_1_1roi_1_1file__source__roi__impl" kind="class"><name>gr::roi::file_source_roi_impl</name>
+    <member refid="classgr_1_1roi_1_1file__source__roi__impl_1a7bf0f9ef7228b3ec52b1afe91344f951" kind="variable"><name>itemsize</name></member>
+    <member refid="classgr_1_1roi_1_1file__source__roi__impl_1a0249090a38e47c6abf42d4eca15ced65" kind="variable"><name>fp</name></member>
+    <member refid="classgr_1_1roi_1_1file__source__roi__impl_1aeb509a9674f53036b91069e2f79d3fcd" kind="variable"><name>new_fp</name></member>
+    <member refid="classgr_1_1roi_1_1file__source__roi__impl_1a562855a58b2d1ffa213fa6d502f3d634" kind="variable"><name>repeat</name></member>
+    <member refid="classgr_1_1roi_1_1file__source__roi__impl_1affa9f95fa69ca0d7d8d53dd9d75d5e40" kind="variable"><name>updated</name></member>
+    <member refid="classgr_1_1roi_1_1file__source__roi__impl_1a9daa22c3428e5e893b5b21e6aca4e45d" kind="variable"><name>fp_mutex</name></member>
+    <member refid="classgr_1_1roi_1_1file__source__roi__impl_1aab2db74ba618e4d03890b9abbf0be520" kind="variable"><name>tx_file</name></member>
+    <member refid="classgr_1_1roi_1_1file__source__roi__impl_1a67d09daeb1a8db9c11f7420fc6855afe" kind="function"><name>do_update</name></member>
+    <member refid="classgr_1_1roi_1_1file__source__roi__impl_1afc38664f16b231dd24ed51d1b73a7ec6" kind="function"><name>file_source_roi_impl</name></member>
+    <member refid="classgr_1_1roi_1_1file__source__roi__impl_1ada7a56a58149dc4f5e284875d4a2b750" kind="function"><name>~file_source_roi_impl</name></member>
+    <member refid="classgr_1_1roi_1_1file__source__roi__impl_1a6697e5773705678e7bc8c06bd3d40454" kind="function"><name>work</name></member>
+    <member refid="classgr_1_1roi_1_1file__source__roi__impl_1a8550f875b35e11e86ef9ef1cd16fd775" kind="function"><name>seek</name></member>
+    <member refid="classgr_1_1roi_1_1file__source__roi__impl_1aeb7877c1413aca7a483177cba1012a55" kind="function"><name>open</name></member>
+    <member refid="classgr_1_1roi_1_1file__source__roi__impl_1a62d41e5946b785f4f8375d97a7387ce9" kind="function"><name>close</name></member>
+    <member refid="classgr_1_1roi_1_1file__source__roi__impl_1ad9a53b6bd52e46781f3c1841c86f7205" kind="function"><name>set_tx_file</name></member>
+    <member refid="classgr_1_1roi_1_1file__source__roi__impl_1a9d11dceb848c4898a27a1bce6236dc4b" kind="function"><name>get_tx_file</name></member>
+  </compound>
+  <compound refid="namespacegr" kind="namespace"><name>gr</name>
+  </compound>
+  <compound refid="namespacegr_1_1roi" kind="namespace"><name>gr::roi</name>
+  </compound>
+  <compound refid="namespacestd" kind="namespace"><name>std</name>
+  </compound>
+  <compound refid="api_8h" kind="file"><name>api.h</name>
+    <member refid="api_8h_1a690bed195c8500952102acd01e123616" kind="define"><name>ROI_API</name></member>
+  </compound>
+  <compound refid="file__source__roi_8h" kind="file"><name>file_source_roi.h</name>
+  </compound>
+  <compound refid="file__source__roi__impl_8h" kind="file"><name>file_source_roi_impl.h</name>
+  </compound>
+  <compound refid="group__defs_8dox" kind="file"><name>group_defs.dox</name>
+  </compound>
+  <compound refid="main__page_8dox" kind="file"><name>main_page.dox</name>
+  </compound>
+  <compound refid="group__block" kind="group"><name>block</name>
+  </compound>
+  <compound refid="dir_d44c64559bbebec7f509842c48db8b23" kind="dir"><name>include</name>
+  </compound>
+  <compound refid="dir_97aefd0d527b934f1d99a682da8fe6a9" kind="dir"><name>lib</name>
+  </compound>
+  <compound refid="dir_173cce590344d9447a64bdada022389c" kind="dir"><name>roi</name>
+  </compound>
+  <compound refid="indexpage" kind="page"><name>index</name>
+  </compound>
+</doxygenindex>

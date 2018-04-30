@@ -1,38 +1,85 @@
-<?xml version="1.0"?>
 <block>
-  <name>file_source_roi</name>
+  <name>File source roi</name>
   <key>roi_file_source_roi</key>
-  <category>[roi]</category>
+  <category>[ROI]</category>
   <import>import roi</import>
-  <make>roi.file_source_roi($itemsize, $*filename, $repeat, $is_tx_file)</make>
-  <!-- Make one 'param' node for every Parameter you want settable from the GUI.
-       Sub-nodes:
-       * name
-       * key (makes the value accessible as $keyname, e.g. in the make node)
-       * type -->
+
+  <make>roi.file_source_roi($type.size*$vlen, $file, $repeat, $is_tx_file)</make>
+  <callback>open($file, $repeat)</callback>
   <param>
-    <name>...</name>
-    <key>...</key>
-    <type>...</type>
+    <name>File</name>
+    <key>file</key>
+    <value/>
+    <type>file_open</type>
+  </param>
+  <param>
+    <name>Output Type</name>
+    <key>type</key>
+    <type>enum</type>
+    <option>
+      <name>Complex</name>
+      <key>complex</key>
+      <opt>size:gr.sizeof_gr_complex</opt>
+    </option>
+    <option>
+      <name>Float</name>
+      <key>float</key>
+      <opt>size:gr.sizeof_float</opt>
+    </option>
+    <option>
+      <name>Int</name>
+      <key>int</key>
+      <opt>size:gr.sizeof_int</opt>
+    </option>
+    <option>
+      <name>Short</name>
+      <key>short</key>
+      <opt>size:gr.sizeof_short</opt>
+    </option>
+    <option>
+      <name>Byte</name>
+      <key>byte</key>
+      <opt>size:gr.sizeof_char</opt>
+    </option>
   </param>
 
-  <!-- Make one 'sink' node per input. Sub-nodes:
-       * name (an identifier for the GUI)
-       * type
-       * vlen
-       * optional (set to 1 for optional inputs) -->
-  <sink>
-    <name>in</name>
-    <type><!-- e.g. int, float, complex, byte, short, xxx_vector, ...--></type>
-  </sink>
-
-  <!-- Make one 'source' node per output. Sub-nodes:
-       * name (an identifier for the GUI)
-       * type
-       * vlen
-       * optional (set to 1 for optional inputs) -->
+  <param>
+    <name>Repeat</name>
+    <key>repeat</key>
+    <type>enum</type>
+    <option>
+      <name>Yes</name>
+      <key>True</key>
+    </option>
+    <option>
+      <name>No</name>
+      <key>False</key>
+    </option>
+  </param>
+  <param>
+    <name>Tx File</name>
+    <key>is_tx_file</key>
+    <type>enum</type>
+    <option>
+      <name>Yes</name>
+      <key>True</key>
+    </option>
+    <option>
+      <name>No</name>
+      <key>False</key>
+    </option>
+  </param>
+  <param>
+    <name>Vec Length</name>
+    <key>vlen</key>
+    <value>1</value>
+    <type>int</type>
+  </param>
+  <check>$vlen > 0</check>
+  <check>$repeat or $is_tx_file</check>
   <source>
     <name>out</name>
-    <type><!-- e.g. int, float, complex, byte, short, xxx_vector, ...--></type>
+    <type>$type</type>
+    <vlen>$vlen</vlen>
   </source>
 </block>
