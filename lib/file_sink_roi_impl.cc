@@ -209,10 +209,11 @@
 #include <gnuradio/io_signature.h>
 #include "file_sink_roi_impl.h"
 
+
+
 namespace gr {
   namespace roi {
-
-    file_sink_roi::sptr
+      file_sink_roi::sptr
     file_sink_roi::make(size_t itemsize, const char *filename, bool append, double sine_freq, double threshold)
     {
       return gnuradio::get_initial_sptr

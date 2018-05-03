@@ -36,6 +36,7 @@ if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspeci
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/roi" TYPE FILE FILES
     "/home/ruiy/store/ROI/GModule/gr-roi/include/roi/api.h"
     "/home/ruiy/store/ROI/GModule/gr-roi/include/roi/file_source_roi.h"
+    "/home/ruiy/store/ROI/GModule/gr-roi/include/roi/file_sink_roi.h"
     )
 endif()
 

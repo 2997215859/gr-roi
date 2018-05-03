@@ -88,27 +88,17 @@ swig/roi_swig_swig_2d0df.cpp: /usr/local/include/gnuradio/swig/sync_decimator.i
 swig/roi_swig_swig_2d0df.cpp: /usr/local/include/gnuradio/swig/gr_logger.i
 swig/roi_swig_swig_2d0df.cpp: /usr/local/include/gnuradio/swig/prefs.i
 swig/roi_swig_swig_2d0df.cpp: ../swig/roi_swig.i
-swig/roi_swig_swig_2d0df.cpp: swig/roi_swig_doc.i
 swig/roi_swig_swig_2d0df.cpp: swig/roi_swig.tag
 	cd /home/ruiy/store/ROI/GModule/gr-roi/build/swig && /usr/bin/cmake -E copy /home/ruiy/store/ROI/GModule/gr-roi/build/swig/roi_swig_swig_2d0df.cpp.in /home/ruiy/store/ROI/GModule/gr-roi/build/swig/roi_swig_swig_2d0df.cpp
 
-swig/roi_swig_doc.i: swig/roi_swig_doc_swig_docs/xml/index.xml
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/ruiy/store/ROI/GModule/gr-roi/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating python docstrings for roi_swig_doc"
-	cd /home/ruiy/store/ROI/GModule/gr-roi/docs/doxygen && /usr/bin/python2 -B /home/ruiy/store/ROI/GModule/gr-roi/docs/doxygen/swig_doc.py /home/ruiy/store/ROI/GModule/gr-roi/build/swig/roi_swig_doc_swig_docs/xml /home/ruiy/store/ROI/GModule/gr-roi/build/swig/roi_swig_doc.i
-
 swig/roi_swig.tag: swig/_roi_swig_swig_tag
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/ruiy/store/ROI/GModule/gr-roi/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating roi_swig.tag"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/ruiy/store/ROI/GModule/gr-roi/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating roi_swig.tag"
 	cd /home/ruiy/store/ROI/GModule/gr-roi/build/swig && ./_roi_swig_swig_tag
 	cd /home/ruiy/store/ROI/GModule/gr-roi/build/swig && /usr/bin/cmake -E touch /home/ruiy/store/ROI/GModule/gr-roi/build/swig/roi_swig.tag
 
-swig/roi_swig_doc_swig_docs/xml/index.xml: swig/_roi_swig_doc_tag
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/ruiy/store/ROI/GModule/gr-roi/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Generating doxygen xml for roi_swig_doc docs"
-	cd /home/ruiy/store/ROI/GModule/gr-roi/build/swig && ./_roi_swig_doc_tag
-	cd /home/ruiy/store/ROI/GModule/gr-roi/build/swig && /usr/bin/doxygen /home/ruiy/store/ROI/GModule/gr-roi/build/swig/roi_swig_doc_swig_docs/Doxyfile
-
 swig/CMakeFiles/roi_swig_swig_2d0df.dir/roi_swig_swig_2d0df.cpp.o: swig/CMakeFiles/roi_swig_swig_2d0df.dir/flags.make
 swig/CMakeFiles/roi_swig_swig_2d0df.dir/roi_swig_swig_2d0df.cpp.o: swig/roi_swig_swig_2d0df.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/ROI/GModule/gr-roi/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object swig/CMakeFiles/roi_swig_swig_2d0df.dir/roi_swig_swig_2d0df.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/ROI/GModule/gr-roi/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object swig/CMakeFiles/roi_swig_swig_2d0df.dir/roi_swig_swig_2d0df.cpp.o"
 	cd /home/ruiy/store/ROI/GModule/gr-roi/build/swig && /usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/roi_swig_swig_2d0df.dir/roi_swig_swig_2d0df.cpp.o -c /home/ruiy/store/ROI/GModule/gr-roi/build/swig/roi_swig_swig_2d0df.cpp
 
 swig/CMakeFiles/roi_swig_swig_2d0df.dir/roi_swig_swig_2d0df.cpp.i: cmake_force
@@ -140,7 +130,7 @@ roi_swig_swig_2d0df_EXTERNAL_OBJECTS =
 swig/roi_swig_swig_2d0df: swig/CMakeFiles/roi_swig_swig_2d0df.dir/roi_swig_swig_2d0df.cpp.o
 swig/roi_swig_swig_2d0df: swig/CMakeFiles/roi_swig_swig_2d0df.dir/build.make
 swig/roi_swig_swig_2d0df: swig/CMakeFiles/roi_swig_swig_2d0df.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ruiy/store/ROI/GModule/gr-roi/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable roi_swig_swig_2d0df"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ruiy/store/ROI/GModule/gr-roi/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable roi_swig_swig_2d0df"
 	cd /home/ruiy/store/ROI/GModule/gr-roi/build/swig && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/roi_swig_swig_2d0df.dir/link.txt --verbose=$(VERBOSE)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Swig source"
 	cd /home/ruiy/store/ROI/GModule/gr-roi/build/swig && /usr/bin/cmake -E make_directory /home/ruiy/store/ROI/GModule/gr-roi/build/swig
@@ -160,9 +150,7 @@ swig/CMakeFiles/roi_swig_swig_2d0df.dir/clean:
 .PHONY : swig/CMakeFiles/roi_swig_swig_2d0df.dir/clean
 
 swig/CMakeFiles/roi_swig_swig_2d0df.dir/depend: swig/roi_swig_swig_2d0df.cpp
-swig/CMakeFiles/roi_swig_swig_2d0df.dir/depend: swig/roi_swig_doc.i
 swig/CMakeFiles/roi_swig_swig_2d0df.dir/depend: swig/roi_swig.tag
-swig/CMakeFiles/roi_swig_swig_2d0df.dir/depend: swig/roi_swig_doc_swig_docs/xml/index.xml
 	cd /home/ruiy/store/ROI/GModule/gr-roi/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ruiy/store/ROI/GModule/gr-roi /home/ruiy/store/ROI/GModule/gr-roi/swig /home/ruiy/store/ROI/GModule/gr-roi/build /home/ruiy/store/ROI/GModule/gr-roi/build/swig /home/ruiy/store/ROI/GModule/gr-roi/build/swig/CMakeFiles/roi_swig_swig_2d0df.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : swig/CMakeFiles/roi_swig_swig_2d0df.dir/depend
 

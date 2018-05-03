@@ -1,5 +1,9 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.8.11">
+  <compound refid="classgr_1_1roi_1_1file__sink__roi" kind="class"><name>gr::roi::file_sink_roi</name>
+    <member refid="classgr_1_1roi_1_1file__sink__roi_1ab652c1812f0917fd12749e3cad7d985b" kind="typedef"><name>sptr</name></member>
+    <member refid="classgr_1_1roi_1_1file__sink__roi_1a993fcf3381de6ebda46c6d12aa37b0ee" kind="function"><name>make</name></member>
+  </compound>
   <compound refid="classgr_1_1roi_1_1file__source__roi" kind="class"><name>gr::roi::file_source_roi</name>
     <member refid="classgr_1_1roi_1_1file__source__roi_1abc873386bb3740c6169b68f3c04032f5" kind="typedef"><name>sptr</name></member>
     <member refid="classgr_1_1roi_1_1file__source__roi_1ac02e3b6cde5ba9b9e231d6b951b7eb66" kind="function"><name>make</name></member>
@@ -12,6 +16,8 @@
   </compound>
   <compound refid="api_8h" kind="file"><name>api.h</name>
     <member refid="api_8h_1a690bed195c8500952102acd01e123616" kind="define"><name>ROI_API</name></member>
+  </compound>
+  <compound refid="file__sink__roi_8h" kind="file"><name>file_sink_roi.h</name>
   </compound>
   <compound refid="file__source__roi_8h" kind="file"><name>file_source_roi.h</name>
   </compound>

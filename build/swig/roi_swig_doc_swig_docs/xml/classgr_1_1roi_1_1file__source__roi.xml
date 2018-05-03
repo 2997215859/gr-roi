@@ -55,24 +55,24 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="1">
-        <label>gr::sync_block</label>
+      <node id="7">
+        <label>sync_block</label>
       </node>
-      <node id="0">
+      <node id="6">
         <label>gr::roi::file_source_roi</label>
         <link refid="classgr_1_1roi_1_1file__source__roi"/>
-        <childnode refid="1" relation="public-inheritance">
+        <childnode refid="7" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="3">
-        <label>gr::sync_block</label>
+      <node id="9">
+        <label>sync_block</label>
       </node>
-      <node id="2">
+      <node id="8">
         <label>gr::roi::file_source_roi</label>
         <link refid="classgr_1_1roi_1_1file__source__roi"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="9" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>

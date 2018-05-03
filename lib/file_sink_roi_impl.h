@@ -206,12 +206,11 @@
 #define INCLUDED_ROI_FILE_SINK_ROI_IMPL_H
 
 #include <roi/file_sink_roi.h>
-#include <gnuradio/blocks/file_sink.h>
 
 namespace gr {
   namespace roi {
 
-    class file_sink_roi_impl : public file_sink
+    class file_sink_roi_impl : public file_sink_roi
     {
      private:
       // Nothing to declare in this block.

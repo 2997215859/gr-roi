@@ -10,10 +10,34 @@
 gnuradio/attributes.h
 -
 
+../include/roi/file_sink_roi.h
+roi/api.h
+-
+gnuradio/sync_block.h
+-
+gnuradio/blocks/file_sink_base.h
+-
+
 ../include/roi/file_source_roi.h
 roi/api.h
 -
 gnuradio/sync_block.h
+-
+
+/home/ruiy/store/ROI/GModule/gr-roi/lib/qa_file_sink_roi.cc
+gnuradio/attributes.h
+-
+cppunit/TestAssert.h
+-
+qa_file_sink_roi.h
+/home/ruiy/store/ROI/GModule/gr-roi/lib/qa_file_sink_roi.h
+roi/file_sink_roi.h
+-
+
+/home/ruiy/store/ROI/GModule/gr-roi/lib/qa_file_sink_roi.h
+cppunit/extensions/HelperMacros.h
+-
+cppunit/TestCase.h
 -
 
 /home/ruiy/store/ROI/GModule/gr-roi/lib/qa_file_source_roi.cc
@@ -37,6 +61,8 @@ qa_roi.h
 /home/ruiy/store/ROI/GModule/gr-roi/lib/qa_roi.h
 qa_file_source_roi.h
 /home/ruiy/store/ROI/GModule/gr-roi/lib/qa_file_source_roi.h
+qa_file_sink_roi.h
+/home/ruiy/store/ROI/GModule/gr-roi/lib/qa_file_sink_roi.h
 
 /home/ruiy/store/ROI/GModule/gr-roi/lib/qa_roi.h
 gnuradio/attributes.h
@@ -114,6 +140,18 @@ gnuradio/api.h
 gnuradio/basic_block.h
 -
 map
+-
+
+/usr/local/include/gnuradio/blocks/api.h
+gnuradio/attributes.h
+-
+
+/usr/local/include/gnuradio/blocks/file_sink_base.h
+gnuradio/blocks/api.h
+-
+boost/thread.hpp
+-
+cstdio
 -
 
 /usr/local/include/gnuradio/config.h

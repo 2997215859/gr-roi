@@ -4,6 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
+  "/home/ruiy/store/ROI/GModule/gr-roi/lib/file_sink_roi_impl.cc" "/home/ruiy/store/ROI/GModule/gr-roi/build/lib/CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.o"
   "/home/ruiy/store/ROI/GModule/gr-roi/lib/file_source_roi_impl.cc" "/home/ruiy/store/ROI/GModule/gr-roi/build/lib/CMakeFiles/gnuradio-roi.dir/file_source_roi_impl.cc.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")

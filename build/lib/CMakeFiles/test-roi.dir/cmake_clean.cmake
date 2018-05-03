@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/test-roi.dir/test_roi.cc.o"
   "CMakeFiles/test-roi.dir/qa_roi.cc.o"
+  "CMakeFiles/test-roi.dir/qa_file_sink_roi.cc.o"
   "CMakeFiles/test-roi.dir/qa_file_source_roi.cc.o"
   "test-roi.pdb"
   "test-roi"

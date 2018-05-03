@@ -10,6 +10,14 @@
 gnuradio/attributes.h
 -
 
+../include/roi/file_sink_roi.h
+roi/api.h
+-
+gnuradio/sync_block.h
+-
+gnuradio/blocks/file_sink_base.h
+-
+
 ../include/roi/file_source_roi.h
 roi/api.h
 -
@@ -63,6 +71,8 @@ limits.h
 -
 roi/file_source_roi.h
 /home/ruiy/store/ROI/GModule/gr-roi/build/swig/roi/file_source_roi.h
+roi/file_sink_roi.h
+/home/ruiy/store/ROI/GModule/gr-roi/build/swig/roi/file_sink_roi.h
 float.h
 -
 math.h
@@ -534,6 +544,18 @@ gnuradio/api.h
 gnuradio/basic_block.h
 -
 map
+-
+
+/usr/local/include/gnuradio/blocks/api.h
+gnuradio/attributes.h
+-
+
+/usr/local/include/gnuradio/blocks/file_sink_base.h
+gnuradio/blocks/api.h
+-
+boost/thread.hpp
+-
+cstdio
 -
 
 /usr/local/include/gnuradio/config.h

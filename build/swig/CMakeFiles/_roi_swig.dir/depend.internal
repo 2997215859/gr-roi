@@ -3,6 +3,7 @@
 
 swig/CMakeFiles/_roi_swig.dir/roi_swigPYTHON_wrap.cxx.o
  ../include/roi/api.h
+ ../include/roi/file_sink_roi.h
  ../include/roi/file_source_roi.h
  /home/ruiy/store/ROI/GModule/gr-roi/build/swig/roi_swigPYTHON_wrap.cxx
  /usr/include/python2.7/Python.h
@@ -72,6 +73,8 @@ swig/CMakeFiles/_roi_swig.dir/roi_swigPYTHON_wrap.cxx.o
  /usr/local/include/gnuradio/block.h
  /usr/local/include/gnuradio/block_gateway.h
  /usr/local/include/gnuradio/block_registry.h
+ /usr/local/include/gnuradio/blocks/api.h
+ /usr/local/include/gnuradio/blocks/file_sink_base.h
  /usr/local/include/gnuradio/config.h
  /usr/local/include/gnuradio/feval.h
  /usr/local/include/gnuradio/gr_complex.h

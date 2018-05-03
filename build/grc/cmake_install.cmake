@@ -33,6 +33,9 @@ if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/gnuradio/grc/blocks" TYPE FILE FILES "/home/ruiy/store/ROI/GModule/gr-roi/grc/roi_file_source_roi.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/gnuradio/grc/blocks" TYPE FILE FILES
+    "/home/ruiy/store/ROI/GModule/gr-roi/grc/roi_file_source_roi.xml"
+    "/home/ruiy/store/ROI/GModule/gr-roi/grc/roi_file_sink_roi.xml"
+    )
 endif()
 

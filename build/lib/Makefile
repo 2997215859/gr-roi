@@ -195,6 +195,33 @@ test-roi/fast:
 	cd /home/ruiy/store/ROI/GModule/gr-roi/build && $(MAKE) -f lib/CMakeFiles/test-roi.dir/build.make lib/CMakeFiles/test-roi.dir/build
 .PHONY : test-roi/fast
 
+file_sink_roi_impl.o: file_sink_roi_impl.cc.o
+
+.PHONY : file_sink_roi_impl.o
+
+# target to build an object file
+file_sink_roi_impl.cc.o:
+	cd /home/ruiy/store/ROI/GModule/gr-roi/build && $(MAKE) -f lib/CMakeFiles/gnuradio-roi.dir/build.make lib/CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.o
+.PHONY : file_sink_roi_impl.cc.o
+
+file_sink_roi_impl.i: file_sink_roi_impl.cc.i
+
+.PHONY : file_sink_roi_impl.i
+
+# target to preprocess a source file
+file_sink_roi_impl.cc.i:
+	cd /home/ruiy/store/ROI/GModule/gr-roi/build && $(MAKE) -f lib/CMakeFiles/gnuradio-roi.dir/build.make lib/CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.i
+.PHONY : file_sink_roi_impl.cc.i
+
+file_sink_roi_impl.s: file_sink_roi_impl.cc.s
+
+.PHONY : file_sink_roi_impl.s
+
+# target to generate assembly for a file
+file_sink_roi_impl.cc.s:
+	cd /home/ruiy/store/ROI/GModule/gr-roi/build && $(MAKE) -f lib/CMakeFiles/gnuradio-roi.dir/build.make lib/CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.s
+.PHONY : file_sink_roi_impl.cc.s
+
 file_source_roi_impl.o: file_source_roi_impl.cc.o
 
 .PHONY : file_source_roi_impl.o
@@ -221,6 +248,33 @@ file_source_roi_impl.s: file_source_roi_impl.cc.s
 file_source_roi_impl.cc.s:
 	cd /home/ruiy/store/ROI/GModule/gr-roi/build && $(MAKE) -f lib/CMakeFiles/gnuradio-roi.dir/build.make lib/CMakeFiles/gnuradio-roi.dir/file_source_roi_impl.cc.s
 .PHONY : file_source_roi_impl.cc.s
+
+qa_file_sink_roi.o: qa_file_sink_roi.cc.o
+
+.PHONY : qa_file_sink_roi.o
+
+# target to build an object file
+qa_file_sink_roi.cc.o:
+	cd /home/ruiy/store/ROI/GModule/gr-roi/build && $(MAKE) -f lib/CMakeFiles/test-roi.dir/build.make lib/CMakeFiles/test-roi.dir/qa_file_sink_roi.cc.o
+.PHONY : qa_file_sink_roi.cc.o
+
+qa_file_sink_roi.i: qa_file_sink_roi.cc.i
+
+.PHONY : qa_file_sink_roi.i
+
+# target to preprocess a source file
+qa_file_sink_roi.cc.i:
+	cd /home/ruiy/store/ROI/GModule/gr-roi/build && $(MAKE) -f lib/CMakeFiles/test-roi.dir/build.make lib/CMakeFiles/test-roi.dir/qa_file_sink_roi.cc.i
+.PHONY : qa_file_sink_roi.cc.i
+
+qa_file_sink_roi.s: qa_file_sink_roi.cc.s
+
+.PHONY : qa_file_sink_roi.s
+
+# target to generate assembly for a file
+qa_file_sink_roi.cc.s:
+	cd /home/ruiy/store/ROI/GModule/gr-roi/build && $(MAKE) -f lib/CMakeFiles/test-roi.dir/build.make lib/CMakeFiles/test-roi.dir/qa_file_sink_roi.cc.s
+.PHONY : qa_file_sink_roi.cc.s
 
 qa_file_source_roi.o: qa_file_source_roi.cc.o
 
@@ -318,9 +372,15 @@ help:
 	@echo "... test-roi"
 	@echo "... install/local"
 	@echo "... install/strip"
+	@echo "... file_sink_roi_impl.o"
+	@echo "... file_sink_roi_impl.i"
+	@echo "... file_sink_roi_impl.s"
 	@echo "... file_source_roi_impl.o"
 	@echo "... file_source_roi_impl.i"
 	@echo "... file_source_roi_impl.s"
+	@echo "... qa_file_sink_roi.o"
+	@echo "... qa_file_sink_roi.i"
+	@echo "... qa_file_sink_roi.s"
 	@echo "... qa_file_source_roi.o"
 	@echo "... qa_file_source_roi.i"
 	@echo "... qa_file_source_roi.s"

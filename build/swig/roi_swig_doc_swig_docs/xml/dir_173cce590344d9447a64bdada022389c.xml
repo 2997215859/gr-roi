@@ -3,6 +3,7 @@
   <compounddef id="dir_173cce590344d9447a64bdada022389c" kind="dir">
     <compoundname>/home/ruiy/store/ROI/GModule/gr-roi/include/roi</compoundname>
     <innerfile refid="api_8h">api.h</innerfile>
+    <innerfile refid="file__sink__roi_8h">file_sink_roi.h</innerfile>
     <innerfile refid="file__source__roi_8h">file_source_roi.h</innerfile>
     <briefdescription>
     </briefdescription>

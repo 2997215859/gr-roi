@@ -56,30 +56,30 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="1">
-        <label>gr::sync_block</label>
+      <node id="16">
+        <label>sync_block</label>
       </node>
-      <node id="2">
+      <node id="17">
         <label>gr::roi::file_source_roi_impl</label>
         <link refid="classgr_1_1roi_1_1file__source__roi__impl"/>
-        <childnode refid="0" relation="public-inheritance">
+        <childnode refid="15" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="0">
+      <node id="15">
         <label>gr::roi::file_source_roi</label>
         <link refid="classgr_1_1roi_1_1file__source__roi"/>
-        <childnode refid="1" relation="public-inheritance">
+        <childnode refid="16" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="4">
-        <label>gr::sync_block</label>
+      <node id="19">
+        <label>sync_block</label>
       </node>
-      <node id="3">
+      <node id="18">
         <label>gr::roi::file_source_roi</label>
         <link refid="classgr_1_1roi_1_1file__source__roi"/>
-        <childnode refid="4" relation="public-inheritance">
+        <childnode refid="19" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>

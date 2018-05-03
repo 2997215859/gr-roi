@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.11">
+  <compounddef id="file__sink__roi__impl_8h" kind="file" language="C++">
+    <compoundname>file_sink_roi_impl.h</compoundname>
+    <includes refid="file__sink__roi_8h" local="no">roi/file_sink_roi.h</includes>
+    <incdepgraph>
+      <node id="14">
+        <label>file_sink_roi_impl.h</label>
+        <link refid="file_sink_roi_impl.h"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>gnuradio/sync_block.h</label>
+      </node>
+      <node id="17">
+        <label>gnuradio/attributes.h</label>
+      </node>
+      <node id="15">
+        <label>roi/file_sink_roi.h</label>
+        <link refid="file__sink__roi_8h"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>gnuradio/blocks/file_sink_base.h</label>
+      </node>
+      <node id="16">
+        <label>roi/api.h</label>
+        <link refid="api_8h"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classgr_1_1roi_1_1file__sink__roi__impl" prot="public">gr::roi::file_sink_roi_impl</innerclass>
+    <innernamespace refid="namespacegr">gr</innernamespace>
+    <innernamespace refid="namespacegr_1_1roi">gr::roi</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/ruiy/store/ROI/GModule/gr-roi/lib/file_sink_roi_impl.h"/>
+  </compounddef>
+</doxygen>

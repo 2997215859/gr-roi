@@ -8,6 +8,36 @@
 
 
 
+%feature("docstring") gr::roi::file_sink_roi "<+description of block+>
+
+Constructor Specific Documentation:
+
+Return a shared_ptr to a new instance of roi::file_sink_roi.
+
+To avoid accidental use of raw pointers, roi::file_sink_roi's constructor is in a private implementation class. roi::file_sink_roi::make is the public interface for creating new instances.
+
+Args:
+    itemsize : 
+    filename : 
+    append : 
+    sine_freq : 
+    threshold : "
+
+%feature("docstring") gr::roi::file_sink_roi::make "<+description of block+>
+
+Constructor Specific Documentation:
+
+Return a shared_ptr to a new instance of roi::file_sink_roi.
+
+To avoid accidental use of raw pointers, roi::file_sink_roi's constructor is in a private implementation class. roi::file_sink_roi::make is the public interface for creating new instances.
+
+Args:
+    itemsize : 
+    filename : 
+    append : 
+    sine_freq : 
+    threshold : "
+
 %feature("docstring") gr::roi::file_source_roi "<+description of block+>
 
 Constructor Specific Documentation:

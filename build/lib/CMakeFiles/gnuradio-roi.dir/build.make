@@ -81,21 +81,47 @@ lib/CMakeFiles/gnuradio-roi.dir/file_source_roi_impl.cc.o.provides: lib/CMakeFil
 lib/CMakeFiles/gnuradio-roi.dir/file_source_roi_impl.cc.o.provides.build: lib/CMakeFiles/gnuradio-roi.dir/file_source_roi_impl.cc.o
 
 
+lib/CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.o: lib/CMakeFiles/gnuradio-roi.dir/flags.make
+lib/CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.o: ../lib/file_sink_roi_impl.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ruiy/store/ROI/GModule/gr-roi/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object lib/CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.o"
+	cd /home/ruiy/store/ROI/GModule/gr-roi/build/lib && /usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.o -c /home/ruiy/store/ROI/GModule/gr-roi/lib/file_sink_roi_impl.cc
+
+lib/CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.i"
+	cd /home/ruiy/store/ROI/GModule/gr-roi/build/lib && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/ruiy/store/ROI/GModule/gr-roi/lib/file_sink_roi_impl.cc > CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.i
+
+lib/CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.s"
+	cd /home/ruiy/store/ROI/GModule/gr-roi/build/lib && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/ruiy/store/ROI/GModule/gr-roi/lib/file_sink_roi_impl.cc -o CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.s
+
+lib/CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.o.requires:
+
+.PHONY : lib/CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.o.requires
+
+lib/CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.o.provides: lib/CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.o.requires
+	$(MAKE) -f lib/CMakeFiles/gnuradio-roi.dir/build.make lib/CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.o.provides.build
+.PHONY : lib/CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.o.provides
+
+lib/CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.o.provides.build: lib/CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.o
+
+
 # Object files for target gnuradio-roi
 gnuradio__roi_OBJECTS = \
-"CMakeFiles/gnuradio-roi.dir/file_source_roi_impl.cc.o"
+"CMakeFiles/gnuradio-roi.dir/file_source_roi_impl.cc.o" \
+"CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.o"
 
 # External object files for target gnuradio-roi
 gnuradio__roi_EXTERNAL_OBJECTS =
 
 lib/libgnuradio-roi-1.0.0git.so.0.0.0: lib/CMakeFiles/gnuradio-roi.dir/file_source_roi_impl.cc.o
+lib/libgnuradio-roi-1.0.0git.so.0.0.0: lib/CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.o
 lib/libgnuradio-roi-1.0.0git.so.0.0.0: lib/CMakeFiles/gnuradio-roi.dir/build.make
 lib/libgnuradio-roi-1.0.0git.so.0.0.0: /usr/lib/x86_64-linux-gnu/libboost_filesystem.so
 lib/libgnuradio-roi-1.0.0git.so.0.0.0: /usr/lib/x86_64-linux-gnu/libboost_system.so
 lib/libgnuradio-roi-1.0.0git.so.0.0.0: /usr/local/lib/libgnuradio-runtime.so
 lib/libgnuradio-roi-1.0.0git.so.0.0.0: /usr/local/lib/libgnuradio-pmt.so
 lib/libgnuradio-roi-1.0.0git.so.0.0.0: lib/CMakeFiles/gnuradio-roi.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ruiy/store/ROI/GModule/gr-roi/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX shared library libgnuradio-roi-1.0.0git.so"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ruiy/store/ROI/GModule/gr-roi/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX shared library libgnuradio-roi-1.0.0git.so"
 	cd /home/ruiy/store/ROI/GModule/gr-roi/build/lib && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/gnuradio-roi.dir/link.txt --verbose=$(VERBOSE)
 	cd /home/ruiy/store/ROI/GModule/gr-roi/build/lib && $(CMAKE_COMMAND) -E cmake_symlink_library libgnuradio-roi-1.0.0git.so.0.0.0 libgnuradio-roi-1.0.0git.so.0.0.0 libgnuradio-roi-1.0.0git.so
 	cd /home/ruiy/store/ROI/GModule/gr-roi/build/lib && /usr/bin/cmake -E create_symlink libgnuradio-roi-1.0.0git.so.0.0.0 /home/ruiy/store/ROI/GModule/gr-roi/build/lib/libgnuradio-roi.so
@@ -111,6 +137,7 @@ lib/CMakeFiles/gnuradio-roi.dir/build: lib/libgnuradio-roi-1.0.0git.so
 .PHONY : lib/CMakeFiles/gnuradio-roi.dir/build
 
 lib/CMakeFiles/gnuradio-roi.dir/requires: lib/CMakeFiles/gnuradio-roi.dir/file_source_roi_impl.cc.o.requires
+lib/CMakeFiles/gnuradio-roi.dir/requires: lib/CMakeFiles/gnuradio-roi.dir/file_sink_roi_impl.cc.o.requires
 
 .PHONY : lib/CMakeFiles/gnuradio-roi.dir/requires
 

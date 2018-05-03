@@ -1,5 +1,5 @@
 <block>
-  <name>File source roi</name>
+  <name>File Source ROI</name>
   <key>roi_file_source_roi</key>
   <category>[ROI]</category>
   <import>import roi</import>

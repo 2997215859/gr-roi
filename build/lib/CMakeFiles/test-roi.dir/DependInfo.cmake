@@ -4,6 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
+  "/home/ruiy/store/ROI/GModule/gr-roi/lib/qa_file_sink_roi.cc" "/home/ruiy/store/ROI/GModule/gr-roi/build/lib/CMakeFiles/test-roi.dir/qa_file_sink_roi.cc.o"
   "/home/ruiy/store/ROI/GModule/gr-roi/lib/qa_file_source_roi.cc" "/home/ruiy/store/ROI/GModule/gr-roi/build/lib/CMakeFiles/test-roi.dir/qa_file_source_roi.cc.o"
   "/home/ruiy/store/ROI/GModule/gr-roi/lib/qa_roi.cc" "/home/ruiy/store/ROI/GModule/gr-roi/build/lib/CMakeFiles/test-roi.dir/qa_roi.cc.o"
   "/home/ruiy/store/ROI/GModule/gr-roi/lib/test_roi.cc" "/home/ruiy/store/ROI/GModule/gr-roi/build/lib/CMakeFiles/test-roi.dir/test_roi.cc.o"

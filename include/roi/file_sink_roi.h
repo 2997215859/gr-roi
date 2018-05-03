@@ -208,6 +208,7 @@
 
 #include <roi/api.h>
 #include <gnuradio/sync_block.h>
+#include <gnuradio/blocks/file_sink_base.h>
 
 namespace gr {
   namespace roi {
@@ -217,7 +218,8 @@ namespace gr {
      * \ingroup roi
      *
      */
-    class ROI_API file_sink_roi : virtual public gr::sync_block
+    class ROI_API file_sink_roi : virtual public gr::sync_block,
+                                  virtual public gr::blocks::file_sink_base
     {
      public:
       typedef boost::shared_ptr<file_sink_roi> sptr;
