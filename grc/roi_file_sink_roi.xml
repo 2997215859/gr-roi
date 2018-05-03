@@ -4,7 +4,7 @@
     <key>roi_file_sink_roi</key>
     <category>[ROI]</category>
     <import>import roi</import>
-    <make>blocks.file_sink($type.size*$vlen, $file, $append)
+    <make>roi.file_sink_roi($type.size*$vlen, $file, $append, $sine_freq, $threshold)
 self.$(id).set_unbuffered($unbuffered)</make>
     <callback>set_unbuffered($unbuffered)</callback>
     <callback>open($file)</callback>
@@ -86,7 +86,7 @@ self.$(id).set_unbuffered($unbuffered)</make>
     </param>
     <param>
         <name>Threshold</name>
-        <key>$threshold</key>
+        <key>threshold</key>
         <value>1</value>
         <type>float</type>
     </param>
