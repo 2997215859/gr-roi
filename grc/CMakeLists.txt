@@ -17,5 +17,6 @@
 # the Free Software Foundation, Inc., 51 Franklin Street,
 # Boston, MA 02110-1301, USA.
 install(FILES
-    roi_file_source_roi.xml DESTINATION share/gnuradio/grc/blocks
+    roi_file_source_roi.xml
+    roi_file_sink_roi.xml DESTINATION share/gnuradio/grc/blocks
 )

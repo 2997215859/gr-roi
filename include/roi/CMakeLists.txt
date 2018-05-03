@@ -22,5 +22,6 @@
 ########################################################################
 install(FILES
     api.h
-    file_source_roi.h DESTINATION include/roi
+    file_source_roi.h
+    file_sink_roi.h DESTINATION include/roi
 )

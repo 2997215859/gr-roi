@@ -27,12 +27,14 @@
 
 #include "qa_roi.h"
 #include "qa_file_source_roi.h"
+#include "qa_file_sink_roi.h"
 
 CppUnit::TestSuite *
 qa_roi::suite()
 {
   CppUnit::TestSuite *s = new CppUnit::TestSuite("roi");
   s->addTest(gr::roi::qa_file_source_roi::suite());
+  s->addTest(gr::roi::qa_file_sink_roi::suite());
 
   return s;
 }

@@ -25,7 +25,8 @@ include(GrPlatform) #define LIB_SUFFIX
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
 list(APPEND roi_sources
-    file_source_roi_impl.cc )
+    file_source_roi_impl.cc
+    file_sink_roi_impl.cc )
 
 set(roi_sources "${roi_sources}" PARENT_SCOPE)
 if(NOT roi_sources)
@@ -59,6 +60,7 @@ include_directories(${CPPUNIT_INCLUDE_DIRS})
 list(APPEND test_roi_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/test_roi.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/qa_roi.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/qa_file_sink_roi.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/qa_file_source_roi.cc
 )
 
