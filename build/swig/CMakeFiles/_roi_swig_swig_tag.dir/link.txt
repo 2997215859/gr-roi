@@ -1,1 +1,0 @@
-/usr/bin/c++   -O3 -DNDEBUG   CMakeFiles/_roi_swig_swig_tag.dir/_roi_swig_swig_tag.cpp.o  -o _roi_swig_swig_tag -rdynamic 
