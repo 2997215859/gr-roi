@@ -208,7 +208,6 @@
 
 #include <roi/api.h>
 #include <gnuradio/sync_block.h>
-#include <gnuradio/blocks/file_sink_base.h>
 #include <roi/file_sink_base.h>
 
 namespace gr {
@@ -233,7 +232,7 @@ namespace gr {
        * class. roi::file_sink_roi::make is the public interface for
        * creating new instances.
        */
-      static sptr make(size_t itemsize, const char *filename, bool append, double sine_freq, double threshold);
+      static sptr make(size_t itemsize, const char *filename, bool append, float sine_freq, float threshold);
     };
 
   } // namespace roi

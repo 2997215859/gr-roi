@@ -5,7 +5,8 @@
     <category>[ROI]</category>
     <import>import roi</import>
     <make>roi.file_sink_roi($type.size*$vlen, $file, $append, $sine_freq, $threshold)
-self.$(id).set_unbuffered($unbuffered)</make>
+<!--self.$(id).set_unbuffered($unbuffered)</make>-->
+    </make>
     <callback>set_unbuffered($unbuffered)</callback>
     <callback>open($file)</callback>
     <param>

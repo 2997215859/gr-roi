@@ -217,7 +217,7 @@ namespace gr {
         size_t d_itemsize;
 
      public:
-      file_sink_roi_impl(size_t itemsize, const char *filename, bool append, double sine_freq, double threshold);
+      file_sink_roi_impl(size_t itemsize, const char *filename, bool append, float sine_freq, float threshold);
       ~file_sink_roi_impl();
 
       // Where all the action really happens
