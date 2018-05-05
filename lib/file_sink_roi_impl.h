@@ -215,9 +215,10 @@ namespace gr {
      private:
       // Nothing to declare in this block.
         size_t d_itemsize;
+        unsigned int d_fft_size;
 
      public:
-      file_sink_roi_impl(size_t itemsize, const char *filename, bool append, float sine_freq, float threshold);
+      file_sink_roi_impl(const char *filename, bool append, float sine_freq, float threshold, int fft_size);
       ~file_sink_roi_impl();
 
       // Where all the action really happens

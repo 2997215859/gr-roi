@@ -215,21 +215,22 @@ namespace gr {
     namespace roi {
 
         file_sink_roi::sptr
-        file_sink_roi::make(size_t itemsize, const char *filename, bool append, float sine_freq, float threshold)
+        file_sink_roi::make(const char *filename, bool append, float sine_freq, float threshold, int fft_size)
         {
             return gnuradio::get_initial_sptr
-                    (new file_sink_roi_impl(itemsize, filename, append, sine_freq, threshold));
+                    (new file_sink_roi_impl(filename, append, sine_freq, threshold, fft_size));
         }
 
         /*
          * The private constructor
          */
-        file_sink_roi_impl::file_sink_roi_impl(size_t itemsize, const char *filename, bool append, float sine_freq, float threshold)
+        file_sink_roi_impl::file_sink_roi_impl(const char *filename, bool append, float sine_freq, float threshold, int fft_size)
                 : gr::sync_block("file_sink_roi",
-                                 gr::io_signature::make(1, 1, itemsize),
+                                 gr::io_signature::make(1, 1, fft_size * sizeof(gr_complex)),
                                  gr::io_signature::make(0, 0, 0)),
                   file_sink_base(filename, true, append),
-                  d_itemsize(itemsize)
+                  d_itemsize(fft_size * sizeof(gr_complex)),
+                  d_fft_size(fft_size)
         {
 
         }
@@ -246,7 +247,8 @@ namespace gr {
                                  gr_vector_const_void_star &input_items,
                                  gr_vector_void_star &output_items)
         {
-            char *inbuf = (char *)input_items[0];
+            // char *inbuf = (char *)input_items[0];
+            const gr_complex *inbuf = (const gr_complex*) input_items[0];
             int nwritten = 0;
 
             do_update();

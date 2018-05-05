@@ -232,7 +232,7 @@ namespace gr {
        * class. roi::file_sink_roi::make is the public interface for
        * creating new instances.
        */
-      static sptr make(size_t itemsize, const char *filename, bool append, float sine_freq, float threshold);
+      static sptr make(const char *filename, bool append, float sine_freq, float threshold, int fft_size);
     };
 
   } // namespace roi

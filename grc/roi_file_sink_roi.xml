@@ -4,7 +4,7 @@
     <key>roi_file_sink_roi</key>
     <category>[ROI]</category>
     <import>import roi</import>
-    <make>roi.file_sink_roi($type.size*$vlen, $file, $append, $sine_freq, $threshold)
+    <make>roi.file_sink_roi($file, $append, $sine_freq, $threshold, $fft_size)
 <!--self.$(id).set_unbuffered($unbuffered)</make>-->
     </make>
     <callback>set_unbuffered($unbuffered)</callback>
@@ -15,7 +15,7 @@
         <value></value>
         <type>file_save</type>
     </param>
-    <param>
+    <!--<param>
         <name>Input Type</name>
         <key>type</key>
         <type>enum</type>
@@ -44,11 +44,26 @@
             <key>byte</key>
             <opt>size:gr.sizeof_char</opt>
         </option>
+    </param>-->
+    <param>
+        <name>Input Type</name>
+        <key>type</key>
+        <type>enum</type>
+        <option>
+            <name>Complex</name>
+            <key>complex</key>
+            <opt>hide_shift:</opt>
+        </option>
+        <option>
+            <name>Float</name>
+            <key>float</key>
+            <opt>hide_shift:all</opt>
+        </option>
     </param>
     <param>
-        <name>Vec Length</name>
-        <key>vlen</key>
-        <value>1</value>
+        <name>FFT Size</name>
+        <key>fft_size</key>
+        <value>1024</value>
         <type>int</type>
     </param>
     <param>
@@ -91,11 +106,9 @@
         <value>1</value>
         <type>float</type>
     </param>
-
-    <check>$vlen > 0</check>
     <sink>
         <name>in</name>
         <type>$type</type>
-        <vlen>$vlen</vlen>
+        <vlen>$fft_size</vlen>
     </sink>
 </block>
