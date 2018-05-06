@@ -25,7 +25,6 @@ include(GrPlatform) #define LIB_SUFFIX
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
 list(APPEND roi_sources
-    file_sink_base.cc
     file_source_roi_impl.cc
     file_sink_roi_impl.cc )
 
