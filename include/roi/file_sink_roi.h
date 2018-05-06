@@ -221,6 +221,7 @@ namespace gr {
     class ROI_API file_sink_roi : virtual public gr::sync_block,
                                   virtual public file_sink_base
     {
+
      public:
       typedef boost::shared_ptr<file_sink_roi> sptr;
 
@@ -232,7 +233,7 @@ namespace gr {
        * class. roi::file_sink_roi::make is the public interface for
        * creating new instances.
        */
-      static sptr make(const char *filename, bool append, float sine_freq, float threshold, int fft_size);
+      static sptr make(const char *filename, bool append, float sine_freq, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads);
     };
 
   } // namespace roi

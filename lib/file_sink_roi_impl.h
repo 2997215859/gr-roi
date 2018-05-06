@@ -206,28 +206,30 @@
 #define INCLUDED_ROI_FILE_SINK_ROI_IMPL_H
 
 #include <roi/file_sink_roi.h>
+#include <gnuradio/fft/fft.h>
 
 namespace gr {
-  namespace roi {
+    namespace roi {
 
-    class file_sink_roi_impl : public file_sink_roi
-    {
-     private:
-      // Nothing to declare in this block.
-        size_t d_itemsize;
-        unsigned int d_fft_size;
+        class file_sink_roi_impl : public file_sink_roi
+        {
+        private:
+            // Nothing to declare in this block.
+//            fft_complex *d_fft;
+            size_t d_itemsize;
+            unsigned int d_fft_size;
 
-     public:
-      file_sink_roi_impl(const char *filename, bool append, float sine_freq, float threshold, int fft_size);
-      ~file_sink_roi_impl();
+        public:
+            file_sink_roi_impl(const char *filename, bool append, float sine_freq, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads);
+            ~file_sink_roi_impl();
 
-      // Where all the action really happens
-      int work(int noutput_items,
-         gr_vector_const_void_star &input_items,
-         gr_vector_void_star &output_items);
-    };
+            // Where all the action really happens
+            int work(int noutput_items,
+                     gr_vector_const_void_star &input_items,
+                     gr_vector_void_star &output_items);
+        };
 
-  } // namespace roi
+    } // namespace roi
 } // namespace gr
 
 #endif /* INCLUDED_ROI_FILE_SINK_ROI_IMPL_H */

@@ -215,16 +215,19 @@ namespace gr {
     namespace roi {
 
         file_sink_roi::sptr
-        file_sink_roi::make(const char *filename, bool append, float sine_freq, float threshold, int fft_size)
+        file_sink_roi::make(const char *filename, bool append, // used for file sink
+                            float sine_freq, float threshold, // used for detect sine wave whose freq is sine_freq
+                            int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads // used for fft
+        )
         {
             return gnuradio::get_initial_sptr
-                    (new file_sink_roi_impl(filename, append, sine_freq, threshold, fft_size));
+                    (new file_sink_roi_impl(filename, append, sine_freq, threshold, fft_size, forward, window, shift, nthreads));
         }
 
         /*
          * The private constructor
          */
-        file_sink_roi_impl::file_sink_roi_impl(const char *filename, bool append, float sine_freq, float threshold, int fft_size)
+        file_sink_roi_impl::file_sink_roi_impl(const char *filename, bool append, float sine_freq, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads)
                 : gr::sync_block("file_sink_roi",
                                  gr::io_signature::make(1, 1, fft_size * sizeof(gr_complex)),
                                  gr::io_signature::make(0, 0, 0)),
