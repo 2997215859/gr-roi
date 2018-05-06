@@ -207,21 +207,36 @@
 
 #include <roi/file_sink_roi.h>
 #include <gnuradio/fft/fft.h>
+#include <boost/thread/mutex.hpp>
 
 namespace gr {
     namespace roi {
 
         class file_sink_roi_impl : public file_sink_roi
         {
+            typedef gr::fft::fft_complex fft_complex;
         private:
-            // Nothing to declare in this block.
-//            fft_complex *d_fft;
+
+            boost::mutex fp_mutex;
+
             size_t d_itemsize;
+
+            fft_complex *d_fft;
             unsigned int d_fft_size;
+            bool d_forward;
+            bool d_shift;
+            std::vector<float> d_window;
+
+            float d_sine_freq;
+            float d_threshold;
+
+            bool status_write;
 
         public:
             file_sink_roi_impl(const char *filename, bool append, float sine_freq, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads);
             ~file_sink_roi_impl();
+
+            bool set_window(const std::vector<float> &window);
 
             // Where all the action really happens
             int work(int noutput_items,
