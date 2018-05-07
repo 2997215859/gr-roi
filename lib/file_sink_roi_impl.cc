@@ -326,15 +326,22 @@ namespace gr {
                 delete res;
 
                 float abs_res_mean = std::accumulate(abs_res.begin(), abs_res.end(), 0.0) / d_fft_size;
-                if ((std::accumulate(abs_res.begin() + syn_sine_frequency_index - 1, abs_res.begin() + syn_sine_frequency_index + 1, 0.0) / abs_res_mean > d_threshold)) {
-                    gr::thread::scoped_lock lock(fp_mutex);
+                if (std::accumulate(abs_res.begin() + syn_sine_frequency_index - 1, abs_res.begin() + syn_sine_frequency_index + 1, 0.0) / abs_res_mean <= d_threshold) {
+                    gr::thread::scoped_lock lock(mutex);
 
                     // 检测到是正弦波, 则切换状态
                     // 比如, 若之前一直是非写入状态, 则更改状态为写入状态,
                     // 若之前一直是写入状态, 则更改状态为非写入状态
                     status_write = !status_write;
                     if (status_write == false) { // 如果是由写入状态转为非写入状态, 则向外通知信号让发Block发送数据
-
+                        fprintf(stderr, "write => 0\n");
+                    } else { // 如果是由非写入状态转为写入状态, 则需要先清空文件
+                        gr::thread::scoped_lock fp_lock(fp_mutex);
+                        fprintf(stderr, "0 => write\n");
+                        do_update();
+                        ftruncate(fileno(d_fp), 0);
+                        lseek(fileno(d_fp), 0, SEEK_SET);
+                        fprintf(stderr, "truncate file\n");
                     }
                 }
 

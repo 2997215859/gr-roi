@@ -208,6 +208,7 @@
 #include <roi/file_sink_roi.h>
 #include <gnuradio/fft/fft.h>
 #include <boost/thread/mutex.hpp>
+#include <cstdio>
 
 namespace gr {
     namespace roi {
@@ -216,7 +217,7 @@ namespace gr {
         {
             typedef gr::fft::fft_complex fft_complex;
         private:
-
+            boost::mutex mutex;
             boost::mutex fp_mutex;
 
             size_t d_itemsize;
