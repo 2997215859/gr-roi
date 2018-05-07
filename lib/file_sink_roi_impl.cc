@@ -225,15 +225,18 @@ namespace gr {
                     (new file_sink_roi_impl(filename, append, sine_freq, threshold, fft_size, forward, window, shift, nthreads));
         }
 
+        void file_sink_roi_impl::forecast(int noutput_items, gr_vector_int &ninput_items_required) {
+            ninput_items_required[0] = 60;
+        }
+
         /*
          * The private constructor
          */
         file_sink_roi_impl::file_sink_roi_impl(const char *filename, bool append, float sine_freq, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads)
-                : gr::sync_block("file_sink_roi",
+                : gr::block("file_sink_roi",
                                  gr::io_signature::make(1, 1, fft_size * sizeof(gr_complex)),
                                  gr::io_signature::make(0, 0, 0)),
                   file_sink_base(filename, true, append),
-                  d_itemsize(fft_size * sizeof(gr_complex)),
 
                   d_fft_size(fft_size),
                   d_forward(forward),
@@ -242,7 +245,8 @@ namespace gr {
                   d_sine_freq(sine_freq),
                   d_threshold(threshold),
 
-                  status_write(false)
+                  status_write(false),
+                  write_item_count(0)
         {
             syn_sine_frequency_index = round(d_fft_size - d_fft_size / d_sine_freq);
             printf("syn_sine_frequency_index = %d\n", syn_sine_frequency_index);
@@ -269,129 +273,230 @@ namespace gr {
                 return false;
             }
         }
-        int
-        file_sink_roi_impl::work(int noutput_items,
-                                 gr_vector_const_void_star &input_items,
-                                 gr_vector_void_star &output_items)
-        {
-            // char *inbuf = (char *)input_items[0];
-            const gr_complex *in = (const gr_complex*) input_items[0];
-            int nwritten = 0;
 
-            unsigned int input_data_size = input_signature()->sizeof_stream_item(0);
-
-            int count = 0;
-
-            while (count++ < noutput_items) {
-                if (d_window.size()) {
-                    gr_complex *dst = d_fft->get_inbuf();
-                    if (!d_forward && d_shift) {
-                        unsigned int offset = (!d_forward && d_shift)?(d_fft_size/2):0;
-                        int fft_m_offset = d_fft_size - offset;
-                        volk_32fc_32f_multiply_32fc(&dst[fft_m_offset], &in[0], &d_window[0], offset);
-                        volk_32fc_32f_multiply_32fc(&dst[0], &in[offset], &d_window[offset], d_fft_size-offset);
-                    } else {
-                        volk_32fc_32f_multiply_32fc(&dst[0], in, &d_window[0], d_fft_size);
-                    }
+        std::vector<float> file_sink_roi_impl::do_fft(const gr_complex *in) {
+            // 处理fft的输入
+            if (d_window.size()) {
+                gr_complex *dst = d_fft->get_inbuf();
+                if (!d_forward && d_shift) {
+                    unsigned int offset = (!d_forward && d_shift)?(d_fft_size/2):0;
+                    int fft_m_offset = d_fft_size - offset;
+                    volk_32fc_32f_multiply_32fc(&dst[fft_m_offset], &in[0], &d_window[0], offset);
+                    volk_32fc_32f_multiply_32fc(&dst[0], &in[offset], &d_window[offset], d_fft_size-offset);
                 } else {
-                    if(!d_forward && d_shift) {  // apply an ifft shift on the data
-                        gr_complex *dst = d_fft->get_inbuf();
-                        unsigned int len = (unsigned int)(floor(d_fft_size/2.0)); // half length of complex array
-                        memcpy(&dst[0], &in[len], sizeof(gr_complex)*(d_fft_size - len));
-                        memcpy(&dst[d_fft_size - len], &in[0], sizeof(gr_complex)*len);
-                    }
-                    else {
-                        memcpy(d_fft->get_inbuf(), in, input_data_size);
-                    }
+                    volk_32fc_32f_multiply_32fc(&dst[0], in, &d_window[0], d_fft_size);
                 }
-
-                d_fft->execute();
-
-                gr_complex *res = new gr_complex[d_fft_size];
-
-                // copy result to our output
-                if(d_forward && d_shift) {  // apply a fft shift on the data
-                    unsigned int len = (unsigned int)(ceil(d_fft_size/2.0));
-                    memcpy(&res[0], &d_fft->get_outbuf()[len], sizeof(gr_complex)*(d_fft_size - len));
-                    memcpy(&res[d_fft_size - len], &d_fft->get_outbuf()[0], sizeof(gr_complex)*len);
+            } else {
+                if(!d_forward && d_shift) {  // apply an ifft shift on the data
+                    gr_complex *dst = d_fft->get_inbuf();
+                    unsigned int len = (unsigned int)(floor(d_fft_size/2.0)); // half length of complex array
+                    memcpy(&dst[0], &in[len], sizeof(gr_complex)*(d_fft_size - len));
+                    memcpy(&dst[d_fft_size - len], &in[0], sizeof(gr_complex)*len);
                 }
                 else {
-                    memcpy (res, d_fft->get_outbuf (), d_itemsize);
+                    memcpy(d_fft->get_inbuf(), in, sizeof(gr_complex) * d_fft_size);
                 }
+            }
 
-                // detect whether res is sine or not
-                std::vector<float> abs_res;
-                for (int i=0;i<d_fft_size;i++) {
-                    abs_res.push_back(sqrt(pow((res+i)->real(), 2) + pow((res+i)->imag(), 2)));
-                }
+            d_fft->execute(); // 计算fft
 
-                delete res;
+            // 获取输出
+            gr_complex *fft_output = new gr_complex[d_fft_size];
+            if(d_forward && d_shift) {  // apply a fft shift on the data
+                unsigned int len = (unsigned int)(ceil(d_fft_size/2.0));
+                memcpy(&fft_output[0], &d_fft->get_outbuf()[len], sizeof(gr_complex)*(d_fft_size - len));
+                memcpy(&fft_output[d_fft_size - len], &d_fft->get_outbuf()[0], sizeof(gr_complex)*len);
+            }
+            else {
+                memcpy (fft_output, d_fft->get_outbuf (), sizeof(gr_complex) * d_fft_size);
+            }
 
+            // 将输出的结果取模
+            // detect whether res is sine or not
+            std::vector<float> fft_abs;
+            for (int i=0;i<d_fft_size;i++) {
+                fft_abs.push_back(sqrt(pow((fft_output+i)->real(), 2) + pow((fft_output+i)->imag(), 2)));
+            }
 
-                float abs_res_mean = std::accumulate(abs_res.begin(), abs_res.end(), 0.0) / d_fft_size;
-//                float tmp1 = std::accumulate(abs_res.begin() + syn_sine_frequency_index - 1, abs_res.begin() + syn_sine_frequency_index + 1, 0.0);
-                float tmp1 = abs_res[syn_sine_frequency_index];
-                float tmp2 = abs_res_mean;
-//                printf("tmp1 = %f\n", tmp1);
-//                printf("tmp2 = %f\n", tmp2);
-                if (tmp1 / tmp2 > d_threshold) {
-                    gr::thread::scoped_lock lock(mutex);
+            delete fft_output; // 销毁并回收内存
 
-                    // 检测到是正弦波, 则切换状态
-                    // 比如, 若之前一直是非写入状态, 则更改状态为写入状态,
-                    // 若之前一直是写入状态, 则更改状态为非写入状态
-                    status_write = !status_write;
-                    if (status_write == false) { // 如果是由写入状态转为非写入状态, 则向外通知信号让发Block发送数据
-                        fprintf(stderr, "write => 0\n");
-                    } else { // 如果是由非写入状态转为写入状态, 则需要先清空文件
-                        gr::thread::scoped_lock fp_lock(fp_mutex);
-                        fprintf(stderr, "0 => write\n");
+            return fft_abs;
+        }
+
+        bool file_sink_roi_impl::detect_sine(const std::vector<float> &fft_abs) {
+            // float tmp1 = std::accumulate(abs_res.begin() + syn_sine_frequency_index - 1, abs_res.begin() + syn_sine_frequency_index + 1, 0.0);
+            float tmp1 = fft_abs[syn_sine_frequency_index];
+            float tmp2 = std::accumulate(fft_abs.begin(), fft_abs.end(), 0.0) / d_fft_size;
+//            printf("tmp1 = %f\n", tmp1);
+//            printf("tmp2 = %f\n", tmp2);
+            if (tmp1 / tmp2 > d_threshold) {
+                return true;
+            }
+            return false;
+        }
+
+        int file_sink_roi_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
+                                             gr_vector_const_void_star &input_items,
+                                             gr_vector_void_star &output_items)
+        {
+//            printf("ninput_item = %d\n", ninput_items[0]);
+            // 本程序中每个item为一个gr_complex * fft_size大小的数据
+            // 输入端口每次送入的一个数据
+            int ret = 0; // 记录消耗的item数目
+            int input_items_num = ninput_items[0]; // 输入的items数目
+
+            const gr_complex *in = (const gr_complex*) input_items[0];
+
+            while (ret < input_items_num) {
+
+                // 检测两端都是指定正弦波的数据, 并将其写入文件(清空之前的数据, 然后写入)
+
+//                printf("first fft\n");
+                std::vector<float> first_fft_abs = do_fft(in);
+                if (detect_sine(first_fft_abs)) { // 如果第一段为正弦波
+
+//                    if (ret + 8512 - 1504 + d_fft_size > input_items_num) { // 如果剩余的item数目不够做第二段检波的fft, 那么就从第一次fft的开始处保留到下一次work
+                    if (ret * d_fft_size + 8512 - 1504 + d_fft_size > d_fft_size * input_items_num) { // 如果剩余的item数目不够做第二段检波的fft, 那么就从第一次fft的开始处保留到下一次work
+                        break;
+                    }
+//                    printf("second fft\n");
+                    std::vector<float> second_fft_abs = do_fft(in + 8512 - 1504);
+                    if (detect_sine(second_fft_abs)) { // 如果第二段也还为正弦波, 则将这一段数据全部写入文件
+                        printf("write data\n");
+                        gr::thread::scoped_lock lock(mutex);
                         do_update();
+                        if (!d_fp)
+                            return noutput_items;
+
+                        // 先清空文件
                         ftruncate(fileno(d_fp), 0);
                         lseek(fileno(d_fp), 0, SEEK_SET);
-                        fprintf(stderr, "truncate file\n");
+
+                        // 将这段数据取为d_fft_size的倍数（向下取整）并写入文件
+//                        fwrite(in, sizeof(gr_complex), 8512 - 1504 + d_fft_size, d_fp);
+
+                        int written_item_num = (8512 - 1504 + d_fft_size) / d_fft_size; // 要写入这么多的item
+                        int t = written_item_num * d_fft_size;
+                        fwrite(in, sizeof(gr_complex), t, d_fp);
+
+                        if (ferror(d_fp)) {
+                            std::stringstream s;
+                            s << "file_sink write failed with error " << fileno(d_fp) << std::endl;
+                            throw std::runtime_error(s.str());
+                        }
+
+                        if (d_unbuffered) fflush(d_fp);
+
+                        in = in + written_item_num * d_fft_size;
+                        ret += written_item_num;
+                        continue;
                     }
                 }
-
-                if (status_write == true) { // 如果是写入状态, 则写入文件
-                    do_update();
-                    if (!d_fp)
-                        return noutput_items;
-
-                    fwrite(in, d_itemsize, 1, d_fp);
-                    if (ferror(d_fp)) {
-                        std::stringstream s;
-                        s << "file_sink write failed with error " << fileno(d_fp) << std::endl;
-                        throw std::runtime_error(s.str());
-                    }
-
-                    if (d_unbuffered) fflush(d_fp);
-                }
-
-                in  += d_fft_size;
+                in = in + d_fft_size;
+                ret += 1;
             }
+            consume_each(ret);
+
             return noutput_items;
 
-//            while (nwritten < noutput_items) {
-//                int count = fwrite(inbuf, d_itemsize, noutput_items - nwritten, d_fp);
-//                if (count == 0) {
+            // char *inbuf = (char *)input_items[0];
+//            const gr_complex *in = (const gr_complex*) input_items[0];
+//            int nwritten = 0;
+//
+//            unsigned int input_data_size = input_signature()->sizeof_stream_item(0);
+//
+//            int count = 0;
+//
+//            while (count++ < noutput_items) {
+//                if (status_write == false) { // 如果是非写入状态, 则检测是否是正弦波
+//                    if (d_window.size()) {
+//                        gr_complex *dst = d_fft->get_inbuf();
+//                        if (!d_forward && d_shift) {
+//                            unsigned int offset = (!d_forward && d_shift)?(d_fft_size/2):0;
+//                            int fft_m_offset = d_fft_size - offset;
+//                            volk_32fc_32f_multiply_32fc(&dst[fft_m_offset], &in[0], &d_window[0], offset);
+//                            volk_32fc_32f_multiply_32fc(&dst[0], &in[offset], &d_window[offset], d_fft_size-offset);
+//                        } else {
+//                            volk_32fc_32f_multiply_32fc(&dst[0], in, &d_window[0], d_fft_size);
+//                        }
+//                    } else {
+//                        if(!d_forward && d_shift) {  // apply an ifft shift on the data
+//                            gr_complex *dst = d_fft->get_inbuf();
+//                            unsigned int len = (unsigned int)(floor(d_fft_size/2.0)); // half length of complex array
+//                            memcpy(&dst[0], &in[len], sizeof(gr_complex)*(d_fft_size - len));
+//                            memcpy(&dst[d_fft_size - len], &in[0], sizeof(gr_complex)*len);
+//                        }
+//                        else {
+//                            memcpy(d_fft->get_inbuf(), in, input_data_size);
+//                        }
+//                    }
+//
+//                    d_fft->execute();
+//
+//                    gr_complex *res = new gr_complex[d_fft_size];
+//
+//                    // copy result to our output
+//                    if(d_forward && d_shift) {  // apply a fft shift on the data
+//                        unsigned int len = (unsigned int)(ceil(d_fft_size/2.0));
+//                        memcpy(&res[0], &d_fft->get_outbuf()[len], sizeof(gr_complex)*(d_fft_size - len));
+//                        memcpy(&res[d_fft_size - len], &d_fft->get_outbuf()[0], sizeof(gr_complex)*len);
+//                    }
+//                    else {
+//                        memcpy (res, d_fft->get_outbuf (), d_itemsize);
+//                    }
+//
+//                    // detect whether res is sine or not
+//                    std::vector<float> abs_res;
+//                    for (int i=0;i<d_fft_size;i++) {
+//                        abs_res.push_back(sqrt(pow((res+i)->real(), 2) + pow((res+i)->imag(), 2)));
+//                    }
+//
+//                    delete res;
+//
+//
+//                    float abs_res_mean = std::accumulate(abs_res.begin(), abs_res.end(), 0.0) / d_fft_size;
+////                float tmp1 = std::accumulate(abs_res.begin() + syn_sine_frequency_index - 1, abs_res.begin() + syn_sine_frequency_index + 1, 0.0);
+//                    float tmp1 = abs_res[syn_sine_frequency_index];
+//                    float tmp2 = abs_res_mean;
+//                    printf("tmp1 = %f\n", tmp1);
+//                    printf("tmp2 = %f\n", tmp2);
+//                    if (tmp1 / tmp2 > d_threshold) {
+//                        gr::thread::scoped_lock lock(mutex);
+//                        if (write_item_count != 0) { // 如果 write_item_count 不为0, 说明写入完毕
+//                            write_item_count = 0;
+//                            status_write == false; // 由写入状态转为非写入状态, 向外通知信号让发Block发送数据
+//                        } else { // 如果是0
+//
+//                        }
+//                    }
+//                }
+//
+//
+//                if (status_write == true) { // 如果是写入状态, 则写入文件, 一直到write_item_count足够大时
+//                    gr::thread::scoped_lock lock(mutex);
+//                    do_update();
+//                    if (!d_fp)
+//                        return noutput_items;
+//
+//                    fwrite(in, d_itemsize, 1, d_fp);
 //                    if (ferror(d_fp)) {
 //                        std::stringstream s;
 //                        s << "file_sink write failed with error " << fileno(d_fp) << std::endl;
 //                        throw std::runtime_error(s.str());
-//                    } else {
-//                        break;
 //                    }
-//                }
-//                nwritten += count;
-//                inbuf += count * d_itemsize;
-//            }
+//                    write_item_count++;
+//                    printf("written item count = %d\n", write_item_count);
+//                    if (write_item_count > (8512 - 1504) / d_fft_size) {
+//                        status_write = false;
+//                    }
 //
-//            if (d_unbuffered) {
-//                fflush(d_fp);
+//                    if (d_unbuffered) fflush(d_fp);
+//                }
+//
+//                in  += d_fft_size;
 //            }
-            // Tell runtime system how many output items we produced.
 //            return noutput_items;
+
         }
 
     } /* namespace roi */

@@ -217,10 +217,11 @@ namespace gr {
         {
             typedef gr::fft::fft_complex fft_complex;
         private:
+            void forecast(int noutput_items,
+                          gr_vector_int &ninput_items_required);
+
             boost::mutex mutex;
             boost::mutex fp_mutex;
-
-            size_t d_itemsize;
 
             fft_complex *d_fft;
             unsigned int d_fft_size;
@@ -234,17 +235,20 @@ namespace gr {
             bool status_write;
 
             int syn_sine_frequency_index;
+            int write_item_count;
 
         public:
             file_sink_roi_impl(const char *filename, bool append, float sine_freq, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads);
             ~file_sink_roi_impl();
 
             bool set_window(const std::vector<float> &window);
+            bool detect_sine(const std::vector<float> &fft_abs);
+            std::vector<float> do_fft(const gr_complex *in);
 
             // Where all the action really happens
-            int work(int noutput_items,
-                     gr_vector_const_void_star &input_items,
-                     gr_vector_void_star &output_items);
+            int general_work(int noutput_items, gr_vector_int &ninput_items,
+                                                 gr_vector_const_void_star &input_items,
+                                                 gr_vector_void_star &output_items);
         };
 
     } // namespace roi
