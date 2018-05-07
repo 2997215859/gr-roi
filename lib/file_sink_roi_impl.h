@@ -233,6 +233,8 @@ namespace gr {
 
             bool status_write;
 
+            int syn_sine_frequency_index;
+
         public:
             file_sink_roi_impl(const char *filename, bool append, float sine_freq, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads);
             ~file_sink_roi_impl();

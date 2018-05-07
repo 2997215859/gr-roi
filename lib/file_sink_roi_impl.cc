@@ -244,6 +244,9 @@ namespace gr {
 
                   status_write(false)
         {
+            syn_sine_frequency_index = round(d_fft_size - d_fft_size / d_sine_freq);
+            printf("syn_sine_frequency_index = %d\n", syn_sine_frequency_index);
+            printf("fft_size = %d\n", d_fft_size);
             d_fft = new fft_complex(d_fft_size, forward, nthreads);
             if (!set_window(window)) {
                 throw std::runtime_error("fft_vcc: window not the same length as fft_size\n");
@@ -317,16 +320,21 @@ namespace gr {
                 }
 
                 // detect whether res is sine or not
-                size_t syn_sine_frequency_index = round(d_fft_size - d_fft_size / d_sine_freq);
                 std::vector<float> abs_res;
-                for (size_t i=0;i<d_fft_size;i++) {
-                    abs_res.push_back(sqrt(pow(res->real(), 2) + pow(res->imag(), 2)));
+                for (int i=0;i<d_fft_size;i++) {
+                    abs_res.push_back(sqrt(pow((res+i)->real(), 2) + pow((res+i)->imag(), 2)));
                 }
 
                 delete res;
 
+
                 float abs_res_mean = std::accumulate(abs_res.begin(), abs_res.end(), 0.0) / d_fft_size;
-                if (std::accumulate(abs_res.begin() + syn_sine_frequency_index - 1, abs_res.begin() + syn_sine_frequency_index + 1, 0.0) / abs_res_mean <= d_threshold) {
+//                float tmp1 = std::accumulate(abs_res.begin() + syn_sine_frequency_index - 1, abs_res.begin() + syn_sine_frequency_index + 1, 0.0);
+                float tmp1 = abs_res[syn_sine_frequency_index];
+                float tmp2 = abs_res_mean;
+//                printf("tmp1 = %f\n", tmp1);
+//                printf("tmp2 = %f\n", tmp2);
+                if (tmp1 / tmp2 > d_threshold) {
                     gr::thread::scoped_lock lock(mutex);
 
                     // 检测到是正弦波, 则切换状态
