@@ -230,7 +230,7 @@ namespace gr {
        * class. roi::file_source_roi::make is the public interface for
        * creating new instances.
        */
-      static sptr make(size_t itemsize, const char *filename, bool repeat, bool is_tx_file);
+      static sptr make(size_t itemsize, const char *filename, bool is_tx_file);
     };
 
   } // namespace roi

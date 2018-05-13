@@ -4,8 +4,8 @@
   <category>[ROI]</category>
   <import>import roi</import>
 
-  <make>roi.file_source_roi($type.size*$vlen, $file, $repeat, $is_tx_file)</make>
-  <callback>open($file, $repeat)</callback>
+  <make>roi.file_source_roi($type.size*$vlen, $file, $is_tx_file)</make>
+  <callback>open($file)</callback>
   <param>
     <name>File</name>
     <key>file</key>
@@ -42,20 +42,6 @@
       <opt>size:gr.sizeof_char</opt>
     </option>
   </param>
-
-  <param>
-    <name>Repeat</name>
-    <key>repeat</key>
-    <type>enum</type>
-    <option>
-      <name>Yes</name>
-      <key>True</key>
-    </option>
-    <option>
-      <name>No</name>
-      <key>False</key>
-    </option>
-  </param>
   <param>
     <name>Tx File</name>
     <key>is_tx_file</key>
@@ -76,7 +62,6 @@
     <type>int</type>
   </param>
   <check>$vlen > 0</check>
-  <check>$repeat or $is_tx_file</check>
   <source>
     <name>out</name>
     <type>$type</type>

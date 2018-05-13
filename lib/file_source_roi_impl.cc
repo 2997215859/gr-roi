@@ -238,23 +238,23 @@ namespace gr {
   namespace roi {
 
     file_source_roi::sptr
-    file_source_roi::make(size_t itemsize, const char *filename, bool repeat, bool is_tx_file)
+    file_source_roi::make(size_t itemsize, const char *filename, bool is_tx_file)
     {
       return gnuradio::get_initial_sptr
-        (new file_source_roi_impl(itemsize, filename, repeat, is_tx_file));
+        (new file_source_roi_impl(itemsize, filename, is_tx_file));
     }
 
     /*
      * The private constructor
      */
-    file_source_roi_impl::file_source_roi_impl(size_t itemsize, const char *filename, bool repeat, bool tx_file)
+    file_source_roi_impl::file_source_roi_impl(size_t itemsize, const char *filename, bool tx_file)
       : gr::sync_block("file_source_roi",
               gr::io_signature::make(0, 0, 0),
               gr::io_signature::make(1, 1, itemsize)),
-        itemsize(itemsize), fp(0), new_fp(0), repeat(repeat), updated(false), tx_file(tx_file)
+        itemsize(itemsize), fp(0), new_fp(0), updated(false), tx_file(tx_file)
 
     {
-        open(filename, repeat);
+        open(filename);
         do_update();
     }
 
@@ -305,9 +305,8 @@ namespace gr {
       /**
        * 打开文件, 得到文件指针new_fp
        * @param filename
-       * @param repeat
        */
-      void file_source_roi_impl::open(const char *filename, bool repeat) {
+      void file_source_roi_impl::open(const char *filename) {
           gr::thread::scoped_lock lock(fp_mutex);
 
           int fd;
@@ -338,8 +337,6 @@ namespace gr {
           }
 
           updated = true;
-          repeat = repeat;
-
       }
 
       void file_source_roi_impl::set_tx_file(bool _tx_file) {
@@ -367,11 +364,6 @@ namespace gr {
 
       int file_source_roi_impl::work(int noutput_items, gr_vector_const_void_star &input_items,
                                      gr_vector_void_star &output_items) {
-
-
-          if (tx_file == false && repeat == false) {
-              throw std::runtime_error("tx_file and repeat shouldn't be false meantime");
-          }
 
           char *o = (char*)output_items[0];
           int i;
@@ -412,9 +404,6 @@ namespace gr {
 
           // 这个while循环用到了一些trick, 实际上每次调用work
 
-          // 如果非repeat, 则读完就没有了
-          // 如果repeat, 则读完还会继续重复
-
           gr::thread::scoped_lock lock(fp_mutex);
           while (size) {
               i = fread(o, itemsize, size, (FILE*)fp);
@@ -425,29 +414,19 @@ namespace gr {
                   break;
               }
 
-
               // 说明noutput_items比剩余要读取的文件还要大, 进入第二次循环
               // 第二次循环时, size > 0, i == 0,
               if (i > 0) {
                   continue;
               }
 
-
               // 到这里, 说明文件已经读取完毕
               // 如果只发送一次该文件, 则直接跳出循环, 之后的work的fp都在文件末尾
-              // 否则, 重置fp指针到文件头
-              if (!repeat) {
-                  tx_file = false;
-                  break;
-              }
-
-              if (fseek((FILE*)fp, 0, SEEK_SET) == -1) {
-                  fprintf(stderr, "[%s] fseek failed\n", __FILE__);
-                  exit(-1);
-              }
+              tx_file = false;
+              break;
           }
 
-          // 如果size > 0, 说明这次work输出只消耗了noutput_items - size个item
+          // 如果size > 0, 说明这次work输出只消耗(生产)了noutput_items - size个item
           if (size > 0) {
               if (size == noutput_items) {
                   return -1;

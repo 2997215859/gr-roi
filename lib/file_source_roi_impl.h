@@ -217,7 +217,6 @@ namespace gr {
         size_t itemsize;
         FILE *fp;
         FILE *new_fp;
-        bool repeat;
         bool updated;
         boost::mutex fp_mutex;
 
@@ -226,7 +225,7 @@ namespace gr {
         bool tx_file;
 
      public:
-      file_source_roi_impl(size_t itemsize, const char *filename, bool repeat, bool tx_file);
+      file_source_roi_impl(size_t itemsize, const char *filename, bool tx_file);
       ~file_source_roi_impl();
 
       // Where all the action really happens
@@ -236,7 +235,7 @@ namespace gr {
 
         // file operation
         bool seek(long seek_point, int whence);
-        void open(const char *filename, bool repeat);
+        void open(const char *filename);
         void close();
 
         void set_tx_file(bool _tx_file);
