@@ -349,39 +349,42 @@ namespace gr {
 
                 // 检测两端都是指定正弦波的数据, 并将其写入文件(清空之前的数据, 然后写入)
                 std::vector<float> first_fft_abs = do_fft(in);
-                if (status_file == false && detect_sine(first_fft_abs)) { // 如果第一段为正弦波, 并且文件中数据已经无效
-                    if (ret * d_fft_size + 8512 - 1504 + d_fft_size > d_fft_size * input_items_num) { // 如果剩余的item数目不够做第二段检波的fft, 那么就从第一次fft的开始处保留到下一次work
-                        break;
-                    }
-                    std::vector<float> second_fft_abs = do_fft(in + 8512 - 1504);
-                    if (detect_sine(second_fft_abs)) { // 如果第二段也还为正弦波, 则将这一段数据全部写入文件
-                        printf("write data index = %d\n", cnt++);
-                        gr::thread::scoped_lock lock(mutex);
-                        do_update();
-                        if (!d_fp)
-                            return noutput_items;
-
-                        // 先清空文件
-                        ftruncate(fileno(d_fp), 0);
-                        lseek(fileno(d_fp), 0, SEEK_SET);
-
-                        int written_item_num = (8512 - 1504 + d_fft_size) / d_fft_size; // 要写入这么多的item
-                        fwrite(in, sizeof(gr_complex), written_item_num * d_fft_size, d_fp);
-
-                        // 写入完毕, 将信号传出去, 设置status_file表示文件已写入, 外界程序检测到该变量为true, 会向对等发送一帧数据
-                        status_file = true;
-
-                        if (ferror(d_fp)) {
-                            std::stringstream s;
-                            s << "file_sink write failed with error " << fileno(d_fp) << std::endl;
-                            throw std::runtime_error(s.str());
+                if (status_file == false) {
+                    if (detect_sine(first_fft_abs)) { // 如果第一段为正弦波, 并且文件中数据已经无效
+                        if (ret * d_fft_size + 8512 - 1504 + d_fft_size >
+                            d_fft_size * input_items_num) { // 如果剩余的item数目不够做第二段检波的fft, 那么就从第一次fft的开始处保留到下一次work
+                            break;
                         }
+                        std::vector<float> second_fft_abs = do_fft(in + 8512 - 1504);
+                        if (detect_sine(second_fft_abs)) { // 如果第二段也还为正弦波, 则将这一段数据全部写入文件
+                            printf("write data index = %d\n", cnt++);
+                            gr::thread::scoped_lock lock(mutex);
+                            do_update();
+                            if (!d_fp)
+                                return noutput_items;
 
-                        if (d_unbuffered) fflush(d_fp);
+                            // 先清空文件
+                            ftruncate(fileno(d_fp), 0);
+                            lseek(fileno(d_fp), 0, SEEK_SET);
 
-                        in = in + written_item_num * d_fft_size;
-                        ret += written_item_num;
-                        continue;
+                            int written_item_num = (8512 - 1504 + d_fft_size) / d_fft_size; // 要写入这么多的item
+                            fwrite(in, sizeof(gr_complex), written_item_num * d_fft_size, d_fp);
+
+                            // 写入完毕, 将信号传出去, 设置status_file表示文件已写入, 外界程序检测到该变量为true, 会向对等发送一帧数据
+                            status_file = true;
+
+                            if (ferror(d_fp)) {
+                                std::stringstream s;
+                                s << "file_sink write failed with error " << fileno(d_fp) << std::endl;
+                                throw std::runtime_error(s.str());
+                            }
+
+                            if (d_unbuffered) fflush(d_fp);
+
+                            in = in + written_item_num * d_fft_size;
+                            ret += written_item_num;
+                            continue;
+                        }
                     }
                 }
                 in = in + d_fft_size;
