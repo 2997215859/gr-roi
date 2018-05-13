@@ -232,10 +232,10 @@ namespace gr {
             float d_sine_freq;
             float d_threshold;
 
-            bool status_write;
+            bool status_write; // 是否正在写入文件的状态标识
 
             int syn_sine_frequency_index;
-            int write_item_count;
+            int cnt;
 
         public:
             file_sink_roi_impl(const char *filename, bool append, float sine_freq, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads);
