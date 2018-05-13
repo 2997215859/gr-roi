@@ -237,6 +237,8 @@ namespace gr {
             int syn_sine_frequency_index;
             int cnt;
 
+            pmt::pmt_t d_port;
+
         public:
             file_sink_roi_impl(const char *filename, bool append, float sine_freq, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads);
             ~file_sink_roi_impl();
@@ -250,6 +252,8 @@ namespace gr {
                 gr::thread::scoped_lock lock(mutex);
                 status_file = _status_file;
             }
+
+            void send_message();
 
             // Where all the action really happens
             int general_work(int noutput_items, gr_vector_int &ninput_items,

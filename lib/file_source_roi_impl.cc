@@ -254,6 +254,10 @@ namespace gr {
         itemsize(itemsize), fp(0), new_fp(0), updated(false), tx_file(tx_file)
 
     {
+        d_port = pmt::mp("msg_status_file");
+        message_port_register_in(d_port);
+        set_msg_handler(d_port, boost::bind(&file_source_roi_impl::msg_handler, this, _1));
+
         open(filename);
         do_update();
     }
@@ -265,6 +269,16 @@ namespace gr {
           if (new_fp) {
               fclose((FILE*)new_fp);
           }
+      }
+
+      void file_source_roi_impl::msg_handler(pmt::pmt_t msg)
+      {
+          printf("***** MESSAGE DEBUG PRINT ********\n");
+          pmt::pmt_t msg_ctl = pmt::car(msg);
+          bool status_file = pmt::dict_ref(msg_ctl, pmt::mp("status_file"), pmt::from_bool("false"));
+          printf("status_file = %d\n", status_file);
+          printf("**********************************\n");
+          set_tx_file(status_file);
       }
 
       /**
@@ -377,6 +391,8 @@ namespace gr {
               return noutput_items;
           }
 
+          printf("test\n");
+
           /**
            *
            * 如果发射文件内容, 则输出为文件内容, 但是要确保每次tx_file变为true的时候, 要对fp置位
@@ -420,6 +436,7 @@ namespace gr {
                   continue;
               }
 
+              printf("file send finished\n");
               // 到这里, 说明文件已经读取完毕
               // 如果只发送一次该文件, 则直接跳出循环, 之后的work的fp都在文件末尾
               tx_file = false;

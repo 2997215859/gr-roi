@@ -248,6 +248,9 @@ namespace gr {
                   status_file(false),
                   cnt(0)
         {
+            d_port = pmt::mp("msg_status_file");
+            message_port_register_out(d_port);
+
             syn_sine_frequency_index = round(d_fft_size - d_fft_size / d_sine_freq);
             printf("syn_sine_frequency_index = %d\n", syn_sine_frequency_index);
             printf("fft_size = %d\n", d_fft_size);
@@ -335,6 +338,19 @@ namespace gr {
             return false;
         }
 
+        void file_sink_roi_impl::send_message()
+        {
+            pmt::pmt_t msg_ctl = pmt::make_dict();
+            msg_ctl = pmt::dict_add(msg_ctl, pmt::string_to_symbol("status_file"), pmt::from_bool(status_file));
+
+            pmt::pmt_t msg_data = pmt::make_vector(0, pmt::from_long(0));
+//            pmt::pmt_t msg = pmt::cons(msg_ctl, pmt::make_u8vector(0, 0));
+            pmt::pmt_t msg = pmt::cons(msg_ctl, msg_data);
+            printf("send message start\n");
+            message_port_pub(d_port, msg);
+            printf("send message end\n");
+        }
+
         int file_sink_roi_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
                                              gr_vector_const_void_star &input_items,
                                              gr_vector_void_star &output_items)
@@ -370,8 +386,10 @@ namespace gr {
                             int written_item_num = (8512 - 1504 + d_fft_size) / d_fft_size; // 要写入这么多的item
                             fwrite(in, sizeof(gr_complex), written_item_num * d_fft_size, d_fp);
 
-                            // 写入完毕, 将信号传出去, 设置status_file表示文件已写入, 外界程序检测到该变量为true, 会向对等发送一帧数据
+                            // 写入完毕, 设置status_file表示文件已写入
+                            // 将信号传出去给发射block, 通知发射block向对等发送一帧数据
                             status_file = true;
+                            send_message();
 
                             if (ferror(d_fp)) {
                                 std::stringstream s;

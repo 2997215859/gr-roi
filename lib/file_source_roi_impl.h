@@ -224,6 +224,8 @@ namespace gr {
 
         bool tx_file;
 
+        pmt::pmt_t d_port;
+
      public:
       file_source_roi_impl(size_t itemsize, const char *filename, bool tx_file);
       ~file_source_roi_impl();
@@ -232,6 +234,8 @@ namespace gr {
       int work(int noutput_items,
          gr_vector_const_void_star &input_items,
          gr_vector_void_star &output_items);
+
+        void msg_handler(pmt::pmt_t msg);
 
         // file operation
         bool seek(long seek_point, int whence);
