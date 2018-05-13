@@ -232,7 +232,7 @@ namespace gr {
             float d_sine_freq;
             float d_threshold;
 
-            bool status_write; // 是否正在写入文件的状态标识
+            bool status_file; // 标识文件中数据是否有效
 
             int syn_sine_frequency_index;
             int cnt;
@@ -244,6 +244,12 @@ namespace gr {
             bool set_window(const std::vector<float> &window);
             bool detect_sine(const std::vector<float> &fft_abs);
             std::vector<float> do_fft(const gr_complex *in);
+
+            bool get_status_file(){return status_file;}
+            void set_status_file(bool _status_file){
+                gr::thread::scoped_lock lock(mutex);
+                status_file = _status_file;
+            }
 
             // Where all the action really happens
             int general_work(int noutput_items, gr_vector_int &ninput_items,

@@ -245,7 +245,7 @@ namespace gr {
                   d_sine_freq(sine_freq),
                   d_threshold(threshold),
 
-                  status_write(false),
+                  status_file(false),
                   cnt(0)
         {
             syn_sine_frequency_index = round(d_fft_size - d_fft_size / d_sine_freq);
@@ -349,7 +349,7 @@ namespace gr {
 
                 // 检测两端都是指定正弦波的数据, 并将其写入文件(清空之前的数据, 然后写入)
                 std::vector<float> first_fft_abs = do_fft(in);
-                if (detect_sine(first_fft_abs)) { // 如果第一段为正弦波
+                if (status_file == false && detect_sine(first_fft_abs)) { // 如果第一段为正弦波, 并且文件中数据已经无效
                     if (ret * d_fft_size + 8512 - 1504 + d_fft_size > d_fft_size * input_items_num) { // 如果剩余的item数目不够做第二段检波的fft, 那么就从第一次fft的开始处保留到下一次work
                         break;
                     }
@@ -368,7 +368,9 @@ namespace gr {
                         int written_item_num = (8512 - 1504 + d_fft_size) / d_fft_size; // 要写入这么多的item
                         fwrite(in, sizeof(gr_complex), written_item_num * d_fft_size, d_fp);
 
-                        // 写入完毕, 将信号传出去
+                        // 写入完毕, 将信号传出去, 设置status_file表示文件已写入, 外界程序检测到该变量为true, 会向对等发送一帧数据
+                        status_file = true;
+
                         if (ferror(d_fp)) {
                             std::stringstream s;
                             s << "file_sink write failed with error " << fileno(d_fp) << std::endl;
