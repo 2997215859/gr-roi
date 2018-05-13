@@ -226,6 +226,8 @@ namespace gr {
      public:
       typedef boost::shared_ptr<file_sink_roi> sptr;
 
+        virtual bool get_status_file() = 0;
+        virtual void set_status_file(bool _status_file) = 0;
       /*!
        * \brief Return a shared_ptr to a new instance of roi::file_sink_roi.
        *
