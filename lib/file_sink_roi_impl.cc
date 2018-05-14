@@ -372,7 +372,7 @@ namespace gr {
                         }
                         std::vector<float> second_fft_abs = do_fft(in + 8512 - 1504);
                         if (detect_sine(second_fft_abs)) { // 如果第二段也还为正弦波, 则将这一段数据全部写入文件
-                            printf("write data index = %d\n", cnt++);
+//                            printf("write data index = %d, write items num = %d, input_items_num = %d, ret = %d\n", cnt++, 8512 - 1504 + d_fft_size, input_items_num, ret);
                             gr::thread::scoped_lock lock(mutex);
                             do_update();
                             if (!d_fp)
@@ -380,11 +380,12 @@ namespace gr {
 
                             // 先清空文件
                             ftruncate(fileno(d_fp), 0);
-                            lseek(fileno(d_fp), 0, SEEK_SET);
+                            rewind(d_fp);
 
-//                            int written_item_num = (8512 - 1504 + d_fft_size) / d_fft_size; // 要写入这么多的item
-//                            fwrite(in, sizeof(gr_complex), written_item_num * d_fft_size, d_fp);
-                            fwrite(in, sizeof(gr_complex), 8512 - 1504 + d_fft_size, d_fp);
+                            int t_size = fwrite(in, sizeof(gr_complex), 8512 - 1504 + d_fft_size, d_fp);
+                            rewind(d_fp);
+                            
+//                            printf("written data size = %d, file size = %d\n", t_size, file_size);
 
                             // 写入完毕, 设置status_file表示文件已写入
                             // 将信号传出去给发射block, 通知发射block向对等发送一帧数据
@@ -401,7 +402,7 @@ namespace gr {
 
                             in = in + 8512 - 1504 + d_fft_size;
                             ret += 8512 - 1504 + d_fft_size;
-                            continue;
+                            break;
                         }
                     }
                 }
