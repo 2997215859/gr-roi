@@ -231,6 +231,16 @@ namespace gr {
        * creating new instances.
        */
       static sptr make(size_t itemsize, const char *filename, bool is_tx_file);
+
+        virtual void msg_handler(pmt::pmt_t msg) = 0;
+
+        // file operation
+        virtual bool seek(long seek_point, int whence) = 0;
+        virtual void open(const char *filename) = 0;
+        virtual void close() = 0;
+
+        virtual void set_tx_file(bool _tx_file) = 0;
+        virtual bool get_tx_file() = 0;
     };
 
   } // namespace roi

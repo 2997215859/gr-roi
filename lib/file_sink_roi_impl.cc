@@ -226,7 +226,7 @@ namespace gr {
         }
 
         void file_sink_roi_impl::forecast(int noutput_items, gr_vector_int &ninput_items_required) {
-            ninput_items_required[0] = 60;
+            ninput_items_required[0] = 8000;
         }
 
         /*
@@ -234,7 +234,7 @@ namespace gr {
          */
         file_sink_roi_impl::file_sink_roi_impl(const char *filename, bool append, float sine_freq, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads)
                 : gr::block("file_sink_roi",
-                                 gr::io_signature::make(1, 1, fft_size * sizeof(gr_complex)),
+                                 gr::io_signature::make(1, 1, sizeof(gr_complex)),
                                  gr::io_signature::make(0, 0, 0)),
                   file_sink_base(filename, true, append),
 
@@ -361,14 +361,13 @@ namespace gr {
 
             const gr_complex *in = (const gr_complex*) input_items[0];
 
-            while (ret < input_items_num) {
+            while (ret + d_fft_size <= input_items_num) {
 
                 // 检测两端都是指定正弦波的数据, 并将其写入文件(清空之前的数据, 然后写入)
                 std::vector<float> first_fft_abs = do_fft(in);
                 if (status_file == false) {
                     if (detect_sine(first_fft_abs)) { // 如果第一段为正弦波, 并且文件中数据已经无效
-                        if (ret * d_fft_size + 8512 - 1504 + d_fft_size >
-                            d_fft_size * input_items_num) { // 如果剩余的item数目不够做第二段检波的fft, 那么就从第一次fft的开始处保留到下一次work
+                        if (ret + 8512 - 1504 + d_fft_size > input_items_num) { // 如果剩余的item数目不够做第二段检波的fft, 那么就从第一次fft的开始处保留到下一次work
                             break;
                         }
                         std::vector<float> second_fft_abs = do_fft(in + 8512 - 1504);
@@ -383,8 +382,9 @@ namespace gr {
                             ftruncate(fileno(d_fp), 0);
                             lseek(fileno(d_fp), 0, SEEK_SET);
 
-                            int written_item_num = (8512 - 1504 + d_fft_size) / d_fft_size; // 要写入这么多的item
-                            fwrite(in, sizeof(gr_complex), written_item_num * d_fft_size, d_fp);
+//                            int written_item_num = (8512 - 1504 + d_fft_size) / d_fft_size; // 要写入这么多的item
+//                            fwrite(in, sizeof(gr_complex), written_item_num * d_fft_size, d_fp);
+                            fwrite(in, sizeof(gr_complex), 8512 - 1504 + d_fft_size, d_fp);
 
                             // 写入完毕, 设置status_file表示文件已写入
                             // 将信号传出去给发射block, 通知发射block向对等发送一帧数据
@@ -399,14 +399,14 @@ namespace gr {
 
                             if (d_unbuffered) fflush(d_fp);
 
-                            in = in + written_item_num * d_fft_size;
-                            ret += written_item_num;
+                            in = in + 8512 - 1504 + d_fft_size;
+                            ret += 8512 - 1504 + d_fft_size;
                             continue;
                         }
                     }
                 }
                 in = in + d_fft_size;
-                ret += 1;
+                ret += d_fft_size;
             }
             consume_each(ret);
 

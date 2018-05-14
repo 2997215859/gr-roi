@@ -251,7 +251,7 @@ namespace gr {
       : gr::sync_block("file_source_roi",
               gr::io_signature::make(0, 0, 0),
               gr::io_signature::make(1, 1, itemsize)),
-        itemsize(itemsize), fp(0), new_fp(0), updated(false), tx_file(tx_file)
+        itemsize(itemsize), fp(0), new_fp(0), updated(false), tx_file(tx_file), cnt(0)
 
     {
         d_port = pmt::mp("msg_status_file");
@@ -379,19 +379,22 @@ namespace gr {
       int file_source_roi_impl::work(int noutput_items, gr_vector_const_void_star &input_items,
                                      gr_vector_void_star &output_items) {
 
+          cnt++;
+
           char *o = (char*)output_items[0];
           int i;
           int size = noutput_items;
+//          printf("tx_file = %d\n", tx_file);
 
           /**
            * 如果不发射文件内容, 则输出为0
            */
-          if (tx_file == false) {
+          if (!tx_file) {
               memset(o, 0, itemsize * size);
               return noutput_items;
           }
+          printf("tx_file = %d\n", tx_file);
 
-          printf("test\n");
 
           /**
            *

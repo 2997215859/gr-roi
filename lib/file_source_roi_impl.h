@@ -226,6 +226,8 @@ namespace gr {
 
         pmt::pmt_t d_port;
 
+        int cnt;
+
      public:
       file_source_roi_impl(size_t itemsize, const char *filename, bool tx_file);
       ~file_source_roi_impl();
