@@ -365,45 +365,43 @@ namespace gr {
 
                 // 检测两端都是指定正弦波的数据, 并将其写入文件(清空之前的数据, 然后写入)
                 std::vector<float> first_fft_abs = do_fft(in);
-                if (status_file == false) {
-                    if (detect_sine(first_fft_abs)) { // 如果第一段为正弦波, 并且文件中数据已经无效
-                        if (ret + 8512 - 1504 + d_fft_size > input_items_num) { // 如果剩余的item数目不够做第二段检波的fft, 那么就从第一次fft的开始处保留到下一次work
-                            break;
-                        }
-                        std::vector<float> second_fft_abs = do_fft(in + 8512 - 1504);
-                        if (detect_sine(second_fft_abs)) { // 如果第二段也还为正弦波, 则将这一段数据全部写入文件
+                if (detect_sine(first_fft_abs)) { // 如果第一段为正弦波, 并且文件中数据已经无效
+                    if (ret + 8512 - 1504 + d_fft_size > input_items_num) { // 如果剩余的item数目不够做第二段检波的fft, 那么就从第一次fft的开始处保留到下一次work
+                        break;
+                    }
+                    std::vector<float> second_fft_abs = do_fft(in + 8512 - 1504);
+                    if (detect_sine(second_fft_abs)) { // 如果第二段也还为正弦波, 则将这一段数据全部写入文件
 //                            printf("write data index = %d, write items num = %d, input_items_num = %d, ret = %d\n", cnt++, 8512 - 1504 + d_fft_size, input_items_num, ret);
-                            gr::thread::scoped_lock lock(mutex);
-                            do_update();
-                            if (!d_fp)
-                                return noutput_items;
+                        gr::thread::scoped_lock lock(mutex);
+                        do_update();
+                        if (!d_fp)
+                            return noutput_items;
 
-                            // 先清空文件
-                            ftruncate(fileno(d_fp), 0);
-                            rewind(d_fp);
+                        // 先清空文件
+                        ftruncate(fileno(d_fp), 0);
+                        rewind(d_fp);
 
-                            int t_size = fwrite(in, sizeof(gr_complex), 8512 - 1504 + d_fft_size, d_fp);
-                            rewind(d_fp);
-                            
+                        int t_size = fwrite(in, sizeof(gr_complex), 8512 - 1504 + d_fft_size, d_fp);
+                        rewind(d_fp);
+
 //                            printf("written data size = %d, file size = %d\n", t_size, file_size);
 
-                            // 写入完毕, 设置status_file表示文件已写入
-                            // 将信号传出去给发射block, 通知发射block向对等发送一帧数据
-                            status_file = true;
-                            send_message();
+                        // 写入完毕, 设置status_file表示文件已写入
+                        // 将信号传出去给发射block, 通知发射block向对等发送一帧数据
+                        status_file = true;
+                        send_message();
 
-                            if (ferror(d_fp)) {
-                                std::stringstream s;
-                                s << "file_sink write failed with error " << fileno(d_fp) << std::endl;
-                                throw std::runtime_error(s.str());
-                            }
-
-                            if (d_unbuffered) fflush(d_fp);
-
-                            in = in + 8512 - 1504 + d_fft_size;
-                            ret += 8512 - 1504 + d_fft_size;
-                            break;
+                        if (ferror(d_fp)) {
+                            std::stringstream s;
+                            s << "file_sink write failed with error " << fileno(d_fp) << std::endl;
+                            throw std::runtime_error(s.str());
                         }
+
+                        if (d_unbuffered) fflush(d_fp);
+
+                        in = in + 8512 - 1504 + d_fft_size;
+                        ret += 8512 - 1504 + d_fft_size;
+                        break;
                     }
                 }
                 in = in + d_fft_size;
