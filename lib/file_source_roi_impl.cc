@@ -251,7 +251,7 @@ namespace gr {
       : gr::sync_block("file_source_roi",
               gr::io_signature::make(0, 0, 0),
               gr::io_signature::make(1, 1, itemsize)),
-        itemsize(itemsize), fp(0), new_fp(0), updated(false), tx_file(tx_file), cnt(0)
+        itemsize(itemsize), fp(0), new_fp(0), updated(false), tx_file(tx_file), cnt(0), is_add_sob(true)
 
     {
         d_port = pmt::mp("msg_status_file");
@@ -376,6 +376,26 @@ namespace gr {
           return tx_file;
       }
 
+
+      void
+      file_source_roi_impl::add_sob(uint64_t item)
+      {
+          static const pmt::pmt_t sob_key = pmt::string_to_symbol("tx_sob");
+          static const pmt::pmt_t value = pmt::PMT_T;
+          static const pmt::pmt_t srcid = pmt::string_to_symbol(alias());
+          add_item_tag(0, item, sob_key, value, srcid);
+      }
+
+
+      void
+      file_source_roi_impl::add_eob(uint64_t item)
+      {
+          static const pmt::pmt_t eob_key = pmt::string_to_symbol("tx_eob");
+          static const pmt::pmt_t value = pmt::PMT_T;
+          static const pmt::pmt_t srcid = pmt::string_to_symbol(alias());
+          add_item_tag(0, item, eob_key, value, srcid);
+      }
+
       int file_source_roi_impl::work(int noutput_items, gr_vector_const_void_star &input_items,
                                      gr_vector_void_star &output_items) {
 
@@ -390,8 +410,9 @@ namespace gr {
            * 如果不发射文件内容, 则输出为0
            */
           if (!tx_file) {
-              memset(o, 0, itemsize * size);
-              return noutput_items;
+//              memset(o, 0, itemsize * size);
+//              return noutput_items;
+              return 0;
           }
           printf("tx_file = %d\n", tx_file);
 
@@ -424,6 +445,7 @@ namespace gr {
           // 这个while循环用到了一些trick, 实际上每次调用work
 
           gr::thread::scoped_lock lock(fp_mutex);
+
           while (size) {
               i = fread(o, itemsize, size, (FILE*)fp);
               size -= i;
@@ -440,9 +462,11 @@ namespace gr {
               }
 
               printf("file send finished\n");
+              add_eob(nitems_written(0) + noutput_items - size - 1);
               // 到这里, 说明文件已经读取完毕
               // 如果只发送一次该文件, 则直接跳出循环, 之后的work的fp都在文件末尾
               tx_file = false;
+
               break;
           }
 

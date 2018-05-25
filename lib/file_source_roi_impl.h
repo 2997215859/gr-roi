@@ -228,9 +228,17 @@ namespace gr {
 
         int cnt;
 
+        bool is_add_sob;
+
      public:
       file_source_roi_impl(size_t itemsize, const char *filename, bool tx_file);
       ~file_source_roi_impl();
+
+
+
+        void add_sob(uint64_t item);
+
+        void add_eob(uint64_t item);
 
       // Where all the action really happens
       int work(int noutput_items,
