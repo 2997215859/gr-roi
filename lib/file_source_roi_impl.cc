@@ -407,7 +407,7 @@ namespace gr {
 //          printf("tx_file = %d\n", tx_file);
 
           /**
-           * 如果不发射文件内容, 则输出为0
+           * 如果不发射文件内容, 则不产生输出(即不往外送数据)
            */
           if (!tx_file) {
 //              memset(o, 0, itemsize * size);
@@ -416,25 +416,10 @@ namespace gr {
           }
           printf("tx_file = %d\n", tx_file);
 
-
           /**
-           *
+           * tx_file = true时, 发送文件, 文件完毕会令tx_file = false,
            * 如果发射文件内容, 则输出为文件内容, 但是要确保每次tx_file变为true的时候, 要对fp置位
-           * 这里要考虑tx_file何时会变为true, 这个一方面有一个初始化, 另一方面有一个设置的过程
-           *
-           * 1.如果一开始就是true, 那么一开始就会发射文件, 所以不影响
-           *
-           * 2. 由外界设置时, 有三种情况:
-           * 如果tx_file值没有变化, 则什么也不处理
-           * 如果tx_file由true变为false, 则不需要处理
-           * 如果tx_file由false变为true, 则需要更新fp到文件头, 也要将is_update设置为true, 这样就会重新定位文件到开头
-           *
-           *
-           * 文件发射完毕该如何处理？
-           * 1. 如果不是重复发送文件, 那么发送文件完毕的时候, 需要将tx_file设置为false, 即表明开始发送空数据
-           * 2. 如果是重复发送文件, 那么就不需要恢复tx_file
-           *
-           *
+           * tx_file 可由外界设置
            */
 
           do_update();
@@ -478,7 +463,7 @@ namespace gr {
               return noutput_items - size;
           }
 
-          // 否则输出消耗了noutput_items
+          // 否则输出了noutput_items
           return noutput_items;
       }
 
