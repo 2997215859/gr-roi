@@ -212,6 +212,9 @@
 #include <volk/volk.h>
 #include <numeric>
 
+#include <ctime>
+#include <sys/time.h>
+
 namespace gr {
     namespace roi {
 
@@ -376,6 +379,11 @@ namespace gr {
                     std::vector<float> second_fft_abs = do_fft(in + 8512 - 1504);
                     if (detect_sine(second_fft_abs)) { // 如果第二段也还为正弦波, 则将这一段数据全部写入文件
 //                            printf("write data index = %d, write items num = %d, input_items_num = %d, ret = %d\n", cnt++, 8512 - 1504 + d_fft_size, input_items_num, ret);
+
+                        struct timeval timer;
+                        gettimeofday(&timer, NULL);
+                        std::cout << "receive time: " << timer.tv_sec << "s " << timer.tv_usec << "us" << std::endl;
+
                         gr::thread::scoped_lock lock(mutex);
                         do_update();
                         if (!d_fp)

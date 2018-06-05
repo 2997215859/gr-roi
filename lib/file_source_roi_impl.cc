@@ -234,6 +234,9 @@
 #define OUR_O_LARGEFILE 0
 #endif
 
+#include <ctime>
+#include <sys/time.h>
+
 namespace gr {
   namespace roi {
 
@@ -414,7 +417,10 @@ namespace gr {
 //              return noutput_items;
               return 0;
           }
-          printf("tx_file = %d\n", tx_file);
+
+          struct timeval timer;
+          gettimeofday(&timer, NULL);
+          std::cout << "transmit time: " << timer.tv_sec << "s " << timer.tv_usec << "us" << std::endl;
 
           /**
            * tx_file = true时, 发送文件, 文件完毕会令tx_file = false,
