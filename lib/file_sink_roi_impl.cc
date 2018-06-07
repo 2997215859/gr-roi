@@ -228,10 +228,10 @@ namespace gr {
                     (new file_sink_roi_impl(filename, append, sine_freq, threshold, fft_size, forward, window, shift, nthreads));
         }
 
-//        void file_sink_roi_impl::forecast(int noutput_items, gr_vector_int &ninput_items_required) {
+        void file_sink_roi_impl::forecast(int noutput_items, gr_vector_int &ninput_items_required) {
 //            set_relative_rate(1.0 / 9000);
-//            ninput_items_required[0] = 9000;
-//        }
+            ninput_items_required[0] = 8000;
+        }
 
         /*
          * The private constructor
@@ -362,7 +362,7 @@ namespace gr {
                                              gr_vector_void_star &output_items)
         {
 
-            set_relative_rate(9000);
+//            set_relative_rate(10000);
 
             // 本程序中每个item为一个gr_complex * fft_size大小的数据
             int ret = 0; // 记录消耗的item数目
@@ -375,10 +375,12 @@ namespace gr {
                 return input_items_num;
             }
 
+            std::cout << input_items_num << std::endl;
             while (ret + d_fft_size <= input_items_num) {
                 // 检测两端都是指定正弦波的数据, 并将其写入文件(清空之前的数据, 然后写入)
                 std::vector<float> first_fft_abs = do_fft(in);
                 if (detect_sine(first_fft_abs)) { // 如果第一段为正弦波, 并且文件中数据已经无效
+//                    if (ret + 8512 > input_items_num) { // 如果剩余的item数目不够做第二段检波的fft, 那么就从第一次fft的开始处保留到下一次work
                     if (ret + 8512 - 1504 + d_fft_size > input_items_num) { // 如果剩余的item数目不够做第二段检波的fft, 那么就从第一次fft的开始处保留到下一次work
                         break;
                     }
@@ -399,8 +401,8 @@ namespace gr {
                         ftruncate(fileno(d_fp), 0);
                         rewind(d_fp);
 
-//                        int t_size = fwrite(in, sizeof(gr_complex), 8512 - 1504 + d_fft_size, d_fp);
-                        int t_size = fwrite(in, sizeof(gr_complex), 8512, d_fp);
+                        int t_size = fwrite(in, sizeof(gr_complex), 8512 - 1504 + d_fft_size, d_fp);
+//                        int t_size = fwrite(in, sizeof(gr_complex), 8512, d_fp);
                         rewind(d_fp);
 
 //                            printf("written data size = %d, file size = %d\n", t_size, file_size);
@@ -418,10 +420,10 @@ namespace gr {
 
                         if (d_unbuffered) fflush(d_fp);
 
-//                        in = in + 8512 - 1504 + d_fft_size;
-//                        ret += 8512 - 1504 + d_fft_size;
-                        in = in + 8512;
-                        ret += 8512;
+                        in = in + 8512 - 1504 + d_fft_size;
+                        ret += 8512 - 1504 + d_fft_size;
+//                        in = in + 8512;
+//                        ret += 8512;
                         break;
                     }
                 }
