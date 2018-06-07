@@ -393,7 +393,8 @@ namespace gr {
                         ftruncate(fileno(d_fp), 0);
                         rewind(d_fp);
 
-                        int t_size = fwrite(in, sizeof(gr_complex), 8512 - 1504 + d_fft_size, d_fp);
+//                        int t_size = fwrite(in, sizeof(gr_complex), 8512 - 1504 + d_fft_size, d_fp);
+                        int t_size = fwrite(in, sizeof(gr_complex), 8512, d_fp);
                         rewind(d_fp);
 
 //                            printf("written data size = %d, file size = %d\n", t_size, file_size);
@@ -411,8 +412,10 @@ namespace gr {
 
                         if (d_unbuffered) fflush(d_fp);
 
-                        in = in + 8512 - 1504 + d_fft_size;
-                        ret += 8512 - 1504 + d_fft_size;
+//                        in = in + 8512 - 1504 + d_fft_size;
+//                        ret += 8512 - 1504 + d_fft_size;
+                        in = in + 8512;
+                        ret += 8512;
                         break;
                     }
                 }
