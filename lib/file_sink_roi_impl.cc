@@ -375,7 +375,6 @@ namespace gr {
                 return input_items_num;
             }
 
-            std::cout << input_items_num << std::endl;
             while (ret + d_fft_size <= input_items_num) {
                 // 检测两端都是指定正弦波的数据, 并将其写入文件(清空之前的数据, 然后写入)
                 std::vector<float> first_fft_abs = do_fft(in);
