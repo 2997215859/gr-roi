@@ -228,9 +228,10 @@ namespace gr {
                     (new file_sink_roi_impl(filename, append, sine_freq, threshold, fft_size, forward, window, shift, nthreads));
         }
 
-        void file_sink_roi_impl::forecast(int noutput_items, gr_vector_int &ninput_items_required) {
-            ninput_items_required[0] = 8000;
-        }
+//        void file_sink_roi_impl::forecast(int noutput_items, gr_vector_int &ninput_items_required) {
+//            set_relative_rate(1.0 / 9000);
+//            ninput_items_required[0] = 9000;
+//        }
 
         /*
          * The private constructor
@@ -251,6 +252,8 @@ namespace gr {
                   status_file(false),
                   cnt(0)
         {
+
+
             d_port = pmt::mp("msg_status_file");
             message_port_register_out(d_port);
 
@@ -358,6 +361,9 @@ namespace gr {
                                              gr_vector_const_void_star &input_items,
                                              gr_vector_void_star &output_items)
         {
+
+            set_relative_rate(9000);
+
             // 本程序中每个item为一个gr_complex * fft_size大小的数据
             int ret = 0; // 记录消耗的item数目
             int input_items_num = ninput_items[0]; // 输入的items数目
