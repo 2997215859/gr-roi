@@ -334,8 +334,8 @@ namespace gr {
 
         bool file_sink_roi_impl::detect_sine(const std::vector<float> &fft_abs) {
             // float tmp1 = std::accumulate(abs_res.begin() + syn_sine_frequency_index - 1, abs_res.begin() + syn_sine_frequency_index + 1, 0.0);
-            float tmp1 = fft_abs[syn_sine_frequency_index];
-            float tmp2 = std::accumulate(fft_abs.begin(), fft_abs.end(), 0.0) / d_fft_size;
+            float tmp1 = fft_abs[syn_sine_frequency_index-1];
+            float tmp2 = std::accumulate(fft_abs.begin(), fft_abs.end(), 0.0) / (d_fft_size + 0.0);
 //            printf("tmp1 = %f\n", tmp1);
 //            printf("tmp2 = %f\n", tmp2);
             if (tmp1 / tmp2 > d_threshold) {
