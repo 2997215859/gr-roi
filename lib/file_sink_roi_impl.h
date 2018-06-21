@@ -217,8 +217,8 @@ namespace gr {
         {
             typedef gr::fft::fft_complex fft_complex;
         private:
-            void forecast(int noutput_items,
-                          gr_vector_int &ninput_items_required);
+//            void forecast(int noutput_items,
+//                          gr_vector_int &ninput_items_required);
 
             boost::mutex mutex;
             boost::mutex fp_mutex;
