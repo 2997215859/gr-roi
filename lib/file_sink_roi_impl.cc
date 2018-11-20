@@ -221,12 +221,13 @@ namespace gr {
         file_sink_roi::sptr
         file_sink_roi::make(const char *filename, bool append, // used for file sink
                             float sine_freq, float threshold, // used for detect sine wave whose freq is sine_freq
-                            int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads // used for fft
+                            int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads, // used for fft
+                            int latency
         )
         {
 
             return gnuradio::get_initial_sptr
-                    (new file_sink_roi_impl(filename, append, sine_freq, threshold, fft_size, forward, window, shift, nthreads));
+                    (new file_sink_roi_impl(filename, append, sine_freq, threshold, fft_size, forward, window, shift, nthreads, latency));
         }
 
 //        void file_sink_roi_impl::forecast(int noutput_items, gr_vector_int &ninput_items_required) {
@@ -236,7 +237,7 @@ namespace gr {
         /*
          * The private constructor
          */
-        file_sink_roi_impl::file_sink_roi_impl(const char *filename, bool append, float sine_freq, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads)
+        file_sink_roi_impl::file_sink_roi_impl(const char *filename, bool append, float sine_freq, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads, int latency)
                 : gr::block("file_sink_roi",
                                  gr::io_signature::make(1, 1, sizeof(gr_complex)),
                                  gr::io_signature::make(0, 0, 0)),
@@ -248,6 +249,8 @@ namespace gr {
 
                   d_sine_freq(sine_freq),
                   d_threshold(threshold),
+
+                  d_latency(latency),
 
                   status_file(false),
                   cnt(0)
@@ -406,6 +409,8 @@ namespace gr {
                         rewind(d_fp);
 
 //                            printf("written data size = %d, file size = %d\n", t_size, file_size);
+
+                        if(d_latency > 0) usleep(d_latency);
 
                         // 写入完毕, 设置status_file表示文件已写入
                         // 将信号传出去给发射block, 通知发射block向对等发送一帧数据

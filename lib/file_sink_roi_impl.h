@@ -239,8 +239,10 @@ namespace gr {
 
             pmt::pmt_t d_port;
 
+            int d_latency;
+
         public:
-            file_sink_roi_impl(const char *filename, bool append, float sine_freq, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads);
+            file_sink_roi_impl(const char *filename, bool append, float sine_freq, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads, int latency);
             ~file_sink_roi_impl();
 
             bool set_window(const std::vector<float> &window);
