@@ -18,5 +18,6 @@
 # Boston, MA 02110-1301, USA.
 install(FILES
     roi_file_source_roi.xml
-    roi_file_sink_roi.xml DESTINATION share/gnuradio/grc/blocks
+    roi_file_sink_roi.xml
+    roi_satellite_file_sink.xml DESTINATION share/gnuradio/grc/blocks
 )

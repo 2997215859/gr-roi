@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<block>
+  <name>Satellite File Sink</name>
+  <key>roi_satellite_file_sink</key>
+  <category>[ROI]</category>
+  <import>import roi</import>
+  <make>roi.satellite_file_sink($file, $append, $threshold, $mseq_len, $mseq_cp_len, $mseq_index, $latency)</make>
+  <!-- Make one 'param' node for every Parameter you want settable from the GUI.
+       Sub-nodes:
+       * name
+       * key (makes the value accessible as $keyname, e.g. in the make node)
+       * type -->
+   <callback>set_unbuffered($unbuffered)</callback>
+   <callback>open($file)</callback>
+
+   <param>
+       <name>File</name>
+       <key>file</key>
+       <value></value>
+       <type>file_save</type>
+   </param>
+    <param>
+        <name>Input Type</name>
+        <key>type</key>
+        <type>enum</type>
+        <option>
+            <name>Complex</name>
+            <key>complex</key>
+            <opt>hide_shift:</opt>
+        </option>
+        <option>
+            <name>Float</name>
+            <key>float</key>
+            <opt>hide_shift:all</opt>
+        </option>
+    </param>
+    <param>
+        <name>Unbuffered</name>
+        <key>unbuffered</key>
+        <value>False</value>
+        <type>bool</type>
+        <option>
+            <name>Off</name>
+            <key>False</key>
+        </option>
+        <option>
+            <name>On</name>
+            <key>True</key>
+        </option>
+    </param>
+
+   <param>
+        <name>Append file</name>
+        <key>append</key>
+        <value>False</value>
+        <type>bool</type>
+        <option>
+            <name>Append</name>
+            <key>True</key>
+        </option>
+        <option>
+            <name>Overwrite</name>
+            <key>False</key>
+        </option>
+    </param>
+    <param>
+        <name>M Sequence Length</name>
+        <key>mseq_len</key>
+        <value>63</value>
+        <type>int</type>
+    </param>
+    <param>
+        <name>M Sequence Cyclic Prefix Length</name>
+        <key>mseq_cp_len</key>
+        <value>27</value>
+        <type>int</type>
+    </param>
+    <param>
+        <name>M Sequence index</name>
+        <key>mseq_index</key>
+        <value>0</value>
+        <type>int</type>
+    </param>
+    <param>
+        <name>Threshold</name>
+        <key>threshold</key>
+        <value>1</value>
+        <type>float</type>
+    </param>
+    <param>
+        <name>Rev-Send. latency</name>
+        <key>latency</key>
+        <value>0</value>
+        <type>int</type>
+    </param>
+
+    <sink>
+        <name>in</name>
+        <type>$type</type>
+        <vlen>1</vlen>
+    </sink>
+
+
+
+  <!-- Make one 'sink' node per input. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+
+  <!-- Make one 'source' node per output. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+</block>

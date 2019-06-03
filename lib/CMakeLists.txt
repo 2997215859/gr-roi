@@ -26,7 +26,8 @@ include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
 list(APPEND roi_sources
     file_source_roi_impl.cc
-    file_sink_roi_impl.cc )
+    file_sink_roi_impl.cc
+    satellite_file_sink_impl.cc )
 
 set(roi_sources "${roi_sources}" PARENT_SCOPE)
 if(NOT roi_sources)

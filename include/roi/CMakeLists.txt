@@ -23,5 +23,6 @@
 install(FILES
     api.h
     file_source_roi.h
-    file_sink_roi.h DESTINATION include/roi
+    file_sink_roi.h
+    satellite_file_sink.h DESTINATION include/roi
 )

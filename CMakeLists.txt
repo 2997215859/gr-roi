@@ -24,6 +24,7 @@ cmake_minimum_required(VERSION 2.6)
 project(gr-roi CXX C)
 enable_testing()
 
+
 #install to PyBOMBS target prefix if defined
 if(DEFINED ENV{PYBOMBS_PREFIX})
     set(CMAKE_INSTALL_PREFIX $ENV{PYBOMBS_PREFIX})
