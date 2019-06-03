@@ -2753,7 +2753,7 @@ namespace gr {
         status_file(false)
     {
         std::cout << "Satellite Fiil Sink" << std::endl;
-        set_relative_rate(1.0 / 4000);
+        set_relative_rate(1.0 / 9000);
         d_port = pmt::mp("msg_status_file");
         message_port_register_out(d_port);
         sync_window = 128;  
@@ -2770,6 +2770,7 @@ namespace gr {
         for (int i=27;i<37;i++) {
             std::cout << m_seq[i] << std::endl;
         } 
+        std::cout << "threshold: " << d_threshold << std::endl; 
     }
 
     /*
@@ -2805,6 +2806,8 @@ namespace gr {
                        gr_vector_void_star &output_items)
     {
 
+      
+
       int ret = 0; // 记录消耗的item数目
       int input_items_num = ninput_items[0]; // 输入的items数目
 
@@ -2814,13 +2817,25 @@ namespace gr {
           consume_each(input_items_num);
           return input_items_num;
       }
+      
+      while (ret < input_items_num && in[ret].real() < 0.1) {
+          ret = ret + 1;
+          in = in + 1;
+      }
+
       int total_mseq_len = d_mseq_len + d_mseq_cp_len;
 //       std::cout << input_items_num << std::endl;
 //      std::cout << total_mseq_len << std::endl;
-      while (ret + total_mseq_len  <= input_items_num) {
+      while (ret + 3042 <= input_items_num) {
+//          std::cout << "status file: " << status_file << std::endl;
           gr_complex sum(0, 0);
-          for (int i = ret;i < ret + total_mseq_len; i++) sum += std::conj(m_seq[i - ret]) * in[i];
-          
+          for (int i = ret;i < ret + total_mseq_len; i++) {
+              //std::cout << sum << " " << i - ret << " " << m_seq[i-ret] << " " << in[i] << std::endl;
+              // if (std::abs(in[i].real()) < 2000 && std::abs(in[i].imag()) < 2000) {
+                  sum += std::conj(m_seq[i - ret]) * in[i - ret];
+              // }
+          }         
+           
           // std::cout << sum << std::endl;                
 
           float avg = std::abs(sum) / total_mseq_len;
@@ -2828,6 +2843,14 @@ namespace gr {
 
           if (avg >= d_threshold) { // 如果某段匹配到是m序列
               std::cout << avg << std::endl;
+              gr_complex sum2(0, 0); 
+              for (int i = ret;i < ret + total_mseq_len; i++) {
+                  std::cout << sum2 << " " << i - ret << " " << m_seq[i-ret] << " " << in[i] << std::endl;
+                  
+                  // if (std::abs(in[i].real()) < 2000 && std::abs(in[i].imag()) < 2000) {
+                      sum2 += std::conj(m_seq[i - ret]) * in[i];
+                  //}
+              }          
               struct timeval timer;
               gettimeofday(&timer, NULL);
               std::cout << "receive time" << timer.tv_sec << "s " << timer.tv_usec << " us" << std::endl;              
@@ -2840,8 +2863,9 @@ namespace gr {
 
               ftruncate(fileno(d_fp), 0);
               rewind(d_fp);
-          
-              int t_size = fwrite(in, sizeof(gr_complex), 3042, d_fp);
+              std::cout << "ret: " << ret << std::endl; 
+              int before_len = std::min(ret, 200); 
+              int t_size = fwrite(in - before_len, sizeof(gr_complex), 3042 + before_len, d_fp);
               rewind(d_fp);
            
               if (d_latency > 0) usleep(d_latency);
@@ -2866,8 +2890,10 @@ namespace gr {
              break;
           }
         
+          // in = in + total_mseq_len;
+          // ret += total_mseq_len;             
           in = in + 1;
-          ret += 1;             
+          ret += 1;
       }
 
       consume_each(ret);
