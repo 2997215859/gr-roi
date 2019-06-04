@@ -2828,12 +2828,9 @@ namespace gr {
 //      std::cout << total_mseq_len << std::endl;
       while (ret + 3042 <= input_items_num) {
 //          std::cout << "status file: " << status_file << std::endl;
-          gr_complex sum(0, 0);
+          gr_complex sum(0.0, 0.0);
           for (int i = ret;i < ret + total_mseq_len; i++) {
-              //std::cout << sum << " " << i - ret << " " << m_seq[i-ret] << " " << in[i] << std::endl;
-              // if (std::abs(in[i].real()) < 2000 && std::abs(in[i].imag()) < 2000) {
-                  sum += std::conj(m_seq[i - ret]) * in[i - ret];
-              // }
+              sum += std::conj(m_seq[i - ret]) * in[i - ret];
           }         
            
           // std::cout << sum << std::endl;                
@@ -2845,11 +2842,8 @@ namespace gr {
               std::cout << avg << std::endl;
               gr_complex sum2(0, 0); 
               for (int i = ret;i < ret + total_mseq_len; i++) {
+                  sum2 += std::conj(m_seq[i - ret]) * in[i-ret];
                   std::cout << sum2 << " " << i - ret << " " << m_seq[i-ret] << " " << in[i - ret] << std::endl;
-                  
-                  // if (std::abs(in[i].real()) < 2000 && std::abs(in[i].imag()) < 2000) {
-                      sum2 += std::conj(m_seq[i - ret]) * in[i-ret];
-                  //}
               }          
               struct timeval timer;
               gettimeofday(&timer, NULL);
