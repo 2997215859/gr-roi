@@ -2864,7 +2864,7 @@ namespace gr {
               ftruncate(fileno(d_fp), 0);
               rewind(d_fp);
               std::cout << "ret: " << ret << std::endl; 
-              int before_len = std::min(ret, 200); 
+              int before_len = std::min(ret, 90);
               int t_size = fwrite(in - before_len, sizeof(gr_complex), 3042 + before_len, d_fp);
               rewind(d_fp);
            
