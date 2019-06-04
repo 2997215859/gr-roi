@@ -2818,7 +2818,7 @@ namespace gr {
           return input_items_num;
       }
       
-      while (ret < input_items_num && in[ret].real() < 0.1) {
+      while (ret < input_items_num && std::abs(in[ret]) < 0.1) {
           ret = ret + 1;
           in = in + 1;
       }
@@ -2845,10 +2845,10 @@ namespace gr {
               std::cout << avg << std::endl;
               gr_complex sum2(0, 0); 
               for (int i = ret;i < ret + total_mseq_len; i++) {
-                  std::cout << sum2 << " " << i - ret << " " << m_seq[i-ret] << " " << in[i] << std::endl;
+                  std::cout << sum2 << " " << i - ret << " " << m_seq[i-ret] << " " << in[i - ret] << std::endl;
                   
                   // if (std::abs(in[i].real()) < 2000 && std::abs(in[i].imag()) < 2000) {
-                      sum2 += std::conj(m_seq[i - ret]) * in[i];
+                      sum2 += std::conj(m_seq[i - ret]) * in[i-ret];
                   //}
               }          
               struct timeval timer;
