@@ -2840,11 +2840,11 @@ namespace gr {
 
           if (avg >= d_threshold) { // 如果某段匹配到是m序列
               std::cout << avg << std::endl;
-              gr_complex sum2(0, 0); 
-              for (int i = ret;i < ret + total_mseq_len; i++) {
-                  sum2 += std::conj(m_seq[i - ret]) * in[i-ret];
-                  std::cout << sum2 << " " << i - ret << " " << m_seq[i-ret] << " " << in[i - ret] << std::endl;
-              }          
+//              gr_complex sum2(0, 0);
+//              for (int i = ret;i < ret + total_mseq_len; i++) {
+//                  sum2 += std::conj(m_seq[i - ret]) * in[i-ret];
+//                  std::cout << sum2 << " " << i - ret << " " << m_seq[i-ret] << " " << in[i - ret] << std::endl;
+//              }
               struct timeval timer;
               gettimeofday(&timer, NULL);
               std::cout << "receive time" << timer.tv_sec << "s " << timer.tv_usec << " us" << std::endl;              
@@ -2857,7 +2857,7 @@ namespace gr {
 
               ftruncate(fileno(d_fp), 0);
               rewind(d_fp);
-              std::cout << "ret: " << ret << std::endl; 
+//              std::cout << "ret: " << ret << std::endl;
               int before_len = std::min(ret, 90);
               int t_size = fwrite(in - before_len, sizeof(gr_complex), 3042 + before_len, d_fp);
               rewind(d_fp);
