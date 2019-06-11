@@ -206,6 +206,7 @@
 #define INCLUDED_ROI_SATELLITE_FILE_SINK_IMPL_H
 
 #include <roi/satellite_file_sink.h>
+#include <gnuradio/fft/fft.h>
 #include <boost/thread/mutex.hpp>
 #include <cstdio>
 
@@ -214,41 +215,54 @@ namespace gr {
 
     class satellite_file_sink_impl : public satellite_file_sink
     {
-     private:
-     pmt::pmt_t d_port;
-     int sync_window;
-     std::vector<gr_complex> m_seq;
-     float d_threshold;
-     int d_latency;
-     
-     int d_mseq_len;
-     int d_mseq_cp_len;     
-     int d_mseq_index;
-     
-     bool status_file;     
 
-     boost::mutex mutex;
-     boost::mutex fp_mutex;     
+        typedef gr::fft::fft_complex fft_complex;
+    private:
+//            void forecast(int noutput_items,
+//                          gr_vector_int &ninput_items_required);
 
-     public:
-      satellite_file_sink_impl(const char *filename, bool append, float threshold, int mseq_len, int mseq_cp_len, int mseq_index, int latency);
-      ~satellite_file_sink_impl();
+          boost::mutex mutex;
+          boost::mutex fp_mutex;
 
-      // Where all the action really happens
-//      void forecast (int noutput_items, gr_vector_int &ninput_items_required);
+          fft_complex *d_fft;
+          unsigned int d_fft_size;
+          bool d_forward;
+          bool d_shift;
+          std::vector<float> d_window;
 
-      bool get_status_file() {return status_file;}
-      void set_status_file(bool _status_file) {
-          gr::thread::scoped_lock(mutex);
-          status_file = _status_file;
-      }     
+          float d_sine_freq;
+          float d_threshold;
 
-      void send_message();
+          bool status_file; // 标识文件中数据是否有效
 
-      int general_work(int noutput_items,
-           gr_vector_int &ninput_items,
-           gr_vector_const_void_star &input_items,
-           gr_vector_void_star &output_items);
+          int syn_sine_frequency_index;
+          int cnt;
+
+          pmt::pmt_t d_port;
+
+          int d_latency;
+
+      public:
+          satellite_file_sink_impl(const char *filename, bool append, float sine_freq, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads, int latency);
+          ~satellite_file_sink_impl();
+
+          bool set_window(const std::vector<float> &window);
+          bool detect_sine(const std::vector<float> &fft_abs);
+          std::vector<float> do_fft(const gr_complex *in);
+
+          bool get_status_file(){return status_file;}
+          void set_status_file(bool _status_file){
+              gr::thread::scoped_lock lock(mutex);
+              status_file = _status_file;
+          }
+
+          void send_message();
+
+          // Where all the action really happens
+          int general_work(int noutput_items, gr_vector_int &ninput_items,
+                           gr_vector_const_void_star &input_items,
+                           gr_vector_void_star &output_items);
+
     };
 
   } // namespace roi
