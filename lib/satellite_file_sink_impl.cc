@@ -236,7 +236,7 @@ namespace gr {
      * The private constructor
      */
       satellite_file_sink_impl::satellite_file_sink_impl(const char *filename, bool append, float sine_freq, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads, int latency)
-              : gr::block("file_sink_roi",
+              : gr::block("satellite_file_sink",
                           gr::io_signature::make(1, 1, sizeof(gr_complex)),
                           gr::io_signature::make(0, 0, 0)),
                 file_sink_base(filename, true, append),
@@ -259,7 +259,7 @@ namespace gr {
         message_port_register_out(d_port);
 
         syn_sine_frequency_index = round(d_fft_size - d_fft_size / d_sine_freq);
-        printf("syn_sine_frequency_index = %d\n", syn_sine_frequency_index);
+        printf("syn_sine_frequency_index = %d, check sine freq = %f \n", syn_sine_frequency_index, sine_freq);
         printf("fft_size = %d\n", d_fft_size);
         d_fft = new fft_complex(d_fft_size, forward, nthreads);
         if (!set_window(window)) {
@@ -361,8 +361,11 @@ namespace gr {
             float tmp2 = std::accumulate(fft_abs.begin(), fft_abs.end(), 0.0) / (d_fft_size + 0.0);
 //            printf("tmp1 = %f\n", tmp1);
 //            printf("tmp2 = %f\n", tmp2);
+//            std::cout << tmp1 / tmp2 << std::endl;
             if (tmp1 / tmp2 > d_threshold) {
 //                std::cout << tmp1 << " " << tmp2 << " " << d_threshold << std::endl;
+                std::cout << tmp1 / tmp2 << std::endl;
+
                 return true;
             }
             return false;
@@ -375,23 +378,25 @@ namespace gr {
                        gr_vector_void_star &output_items)
     {
 
-        // 本程序中每个item为一个gr_complex * fft_size大小的数据
-        int ret = 0; // 记录消耗的item数目
-        int input_items_num = ninput_items[0]; // 输入的items数目
+//            std::cout << ninput_items[0] << " " << noutput_items << std::endl;
 
-        const gr_complex *in = (const gr_complex*) input_items[0];
+            // 本程序中每个item为一个gr_complex * fft_size大小的数据
+            int ret = 0; // 记录消耗的item数目
+            int input_items_num = ninput_items[0]; // 输入的items数目
 
-        if (status_file == true) { // 如果文件状态有效, 则直接扔掉数据
-            consume_each(input_items_num);
-            return input_items_num;
-        }
+            const gr_complex *in = (const gr_complex*) input_items[0];
 
-        int save_data_len = 3490;
-        while (ret + save_data_len <= input_items_num) {
-            // 检测两端都是指定正弦波的数据, 并将其写入文件(清空之前的数据, 然后写入)
-            std::vector<float> first_fft_abs = do_fft(in);
-            if (detect_sine(first_fft_abs)) { // 如果第一段为正弦波, 并且文件中数据已经无效
+            if (status_file == true) { // 如果文件状态有效, 则直接扔掉数据
+                consume_each(input_items_num);
+                return input_items_num;
+            }
 
+            int signal_total_len = 6242;
+            int pilot_sine_len = 1504;
+
+            while (ret + signal_total_len <= signal_total_len) {
+                std::vector<float> first_fft_abs = do_fft(in);
+                if (detect_sine(first_fft_abs)) {
                     struct timeval timer;
                     gettimeofday(&timer, NULL);
                     std::cout << "receive time: " << timer.tv_sec << "s " << timer.tv_usec << "us" << std::endl;
@@ -405,9 +410,11 @@ namespace gr {
                     ftruncate(fileno(d_fp), 0);
                     rewind(d_fp);
 
-                    int t_size = fwrite(in, sizeof(gr_complex), save_data_len, d_fp);
+//                        int t_size = fwrite(in, sizeof(gr_complex), 8512 - 1504 + d_fft_size, d_fp);
+                    int t_size = fwrite(in, sizeof(gr_complex), signal_total_len, d_fp);
                     rewind(d_fp);
 
+//                            printf("written data size = %d, file size = %d\n", t_size, file_size);
 
                     if(d_latency > 0) usleep(d_latency);
 
@@ -424,18 +431,79 @@ namespace gr {
 
                     if (d_unbuffered) fflush(d_fp);
 
-                    in = in + save_data_len;
-                    ret += save_data_len;
+//                        in = in + 8512 - 1504 + d_fft_size;
+//                        ret += 8512 - 1504 + d_fft_size;
+                    in = in + signal_total_len;
+                    ret += signal_total_len;
                     break;
+                }
+
+                in = in + d_fft_size;
+                ret += d_fft_size;
             }
 
-            in = in + d_fft_size;
-            ret += d_fft_size;
-        }
+//            while (ret + d_fft_size <= input_items_num) {
+//                // 检测两端都是指定正弦波的数据, 并将其写入文件(清空之前的数据, 然后写入)
+//                std::vector<float> first_fft_abs = do_fft(in);
+//                if (detect_sine(first_fft_abs)) { // 如果第一段为正弦波, 并且文件中数据已经无效
+//                    std::cout << "first pass" << std::endl;
+//                    if (ret + 6242 > input_items_num) { // 如果剩余的item数目不够做第二段检波的fft, 那么就从第一次fft的开始处保留到下一次work
+////                    if (ret + 8512 - 1504 + d_fft_size > input_items_num) { // 如果剩余的item数目不够做第二段检波的fft, 那么就从第一次fft的开始处保留到下一次work
+//                        break;
+//                    }
+//                    std::vector<float> second_fft_abs = do_fft(in + 6242 - 1504);
+//                    if (detect_sine(second_fft_abs)) { // 如果第二段也还为正弦波, 则将这一段数据全部写入文件
+////                            printf("write data index = %d, write items num = %d, input_items_num = %d, ret = %d\n", cnt++, 8512 - 1504 + d_fft_size, input_items_num, ret);
+//
+//                        struct timeval timer;
+//                        gettimeofday(&timer, NULL);
+//                        std::cout << "receive time: " << timer.tv_sec << "s " << timer.tv_usec << "us" << std::endl;
+//
+//                        gr::thread::scoped_lock lock(mutex);
+//                        do_update();
+//                        if (!d_fp)
+//                            return noutput_items;
+//
+//                        // 先清空文件
+//                        ftruncate(fileno(d_fp), 0);
+//                        rewind(d_fp);
+//
+////                        int t_size = fwrite(in, sizeof(gr_complex), 8512 - 1504 + d_fft_size, d_fp);
+//                        int t_size = fwrite(in, sizeof(gr_complex), 6242, d_fp);
+//                        rewind(d_fp);
+//
+////                            printf("written data size = %d, file size = %d\n", t_size, file_size);
+//
+//                        if(d_latency > 0) usleep(d_latency);
+//
+//                        // 写入完毕, 设置status_file表示文件已写入
+//                        // 将信号传出去给发射block, 通知发射block向对等发送一帧数据
+//                        status_file = true;
+//                        send_message();
+//
+//                        if (ferror(d_fp)) {
+//                            std::stringstream s;
+//                            s << "file_sink write failed with error " << fileno(d_fp) << std::endl;
+//                            throw std::runtime_error(s.str());
+//                        }
+//
+//                        if (d_unbuffered) fflush(d_fp);
+//
+////                        in = in + 8512 - 1504 + d_fft_size;
+////                        ret += 8512 - 1504 + d_fft_size;
+//                        in = in + 6242;
+//                        ret += 6242;
+//                        break;
+//                    }
+//                }
+//
+//                in = in + d_fft_size;
+//                ret += d_fft_size;
+//            }
+            consume_each(ret);
 
-        consume_each(ret);
+            return noutput_items;
 
-        return noutput_items;
     }
 
   } /* namespace roi */
