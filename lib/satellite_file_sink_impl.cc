@@ -391,7 +391,7 @@ namespace gr {
                 return input_items_num;
             }
 
-            int signal_total_len = 6242;
+            int signal_total_len = 3606;
             int pilot_sine_len = 1504;
 
             while (ret + signal_total_len <= signal_total_len) {
