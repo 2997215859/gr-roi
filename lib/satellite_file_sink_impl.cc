@@ -254,7 +254,7 @@ namespace gr {
                 cnt(0)
     {
         std::cout << "Satellite Fiil Sink" << std::endl;
-        set_relative_rate(1.0 / 7000);
+        set_relative_rate(1.0 / 4000);
         d_port = pmt::mp("msg_status_file");
         message_port_register_out(d_port);
 
@@ -396,8 +396,8 @@ namespace gr {
                 in = in + 1;
             }
 
-            int signal_total_len = 6242;
-            int pilot_sine_len = 1504;
+            int signal_total_len = 4000;
+            int pilot_sine_len = 256;
 
             while (ret + signal_total_len <= signal_total_len) {
                 std::vector<float> first_fft_abs = do_fft(in);
