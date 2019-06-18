@@ -391,7 +391,7 @@ namespace gr {
                 return input_items_num;
             }
 
-            while (ret < input_items_num && in[ret].real() < 0.1) {
+            while (ret < input_items_num && in[ret].real() < 0.06) {
                 ret = ret + 1;
                 in = in + 1;
             }
