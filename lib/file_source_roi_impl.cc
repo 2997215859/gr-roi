@@ -395,7 +395,7 @@ namespace gr {
       {
           static const pmt::pmt_t eob_key = pmt::string_to_symbol("tx_eob");
           static const pmt::pmt_t value = pmt::PMT_T;
-          static const pmt::pmt_t srcid = pmt::string_to_symbol(alias());
+          static const pmt::pmt_t srcid = pmt::string_to_symbol(alias());  ///alias:以字符串的形式返回块的别名
           add_item_tag(0, item, eob_key, value, srcid);
       }
 
@@ -453,7 +453,7 @@ namespace gr {
               }
 
               printf("file send finished\n");
-              add_eob(nitems_written(0) + noutput_items - size - 1);
+              add_eob(nitems_written(0) + noutput_items - size - 1); ///???????
               // 到这里, 说明文件已经读取完毕
               // 如果只发送一次该文件, 则直接跳出循环, 之后的work的fp都在文件末尾
               tx_file = false;

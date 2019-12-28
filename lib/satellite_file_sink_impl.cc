@@ -216,6 +216,7 @@
 #include "satellite_file_sink_impl.h"
 #include <cmath>
 #include <iostream>
+#include <algorithm>
 using namespace std;
 
 
@@ -254,7 +255,7 @@ namespace gr {
                 cnt(0)
     {
         std::cout << "Satellite Fiil Sink" << std::endl;
-        set_relative_rate(1.0 / 4000);
+        set_relative_rate(1.0 / 4000);  ///设置近似输入率（抽取器<1，差值器>1）
         d_port = pmt::mp("msg_status_file");
         message_port_register_out(d_port);
 
@@ -343,34 +344,44 @@ namespace gr {
     void satellite_file_sink_impl::send_message()
     {
         pmt::pmt_t msg_ctl = pmt::make_dict();
-        msg_ctl = pmt::dict_add(msg_ctl, pmt::string_to_symbol("status_file"), pmt::from_bool(true));
+        msg_ctl = pmt::dict_add(msg_ctl, pmt::string_to_symbol("status_file"), pmt::from_bool(true));  ///创建一个新的dictionary
 
-        pmt::pmt_t msg_data = pmt::make_vector(0, pmt::from_long(0));
+        pmt::pmt_t msg_data = pmt::make_vector(0, pmt::from_long(0));  ///创建一个vector向量
 //            pmt::pmt_t msg = pmt::cons(msg_ctl, pmt::make_u8vector(0, 0));
-        pmt::pmt_t msg = pmt::cons(msg_ctl, msg_data);
+        pmt::pmt_t msg = pmt::cons(msg_ctl, msg_data); ///返回一个新分配的对，第一个元素为msg_ctl，其余元素为msg_data
         printf("send message start\n");
         message_port_pub(d_port, msg);
         printf("send message end\n");
     }
 
 
-        bool satellite_file_sink_impl::detect_sine(const std::vector<float> &fft_abs) {
-            // float tmp1 = std::accumulate(abs_res.begin() + syn_sine_frequency_index - 1, abs_res.begin() + syn_sine_frequency_index + 1, 0.0);
-//            float tmp1 = fft_abs[syn_sine_frequency_index+1] + fft_abs[syn_sine_frequency_index-1] + fft_abs[syn_sine_frequency_index];
-            float tmp1 = fft_abs[syn_sine_frequency_index];
-            float tmp2 = std::accumulate(fft_abs.begin(), fft_abs.end(), 0.0) / (d_fft_size + 0.0);
-//            printf("tmp1 = %f\n", tmp1);
-//            printf("tmp2 = %f\n", tmp2);
-//            std::cout << tmp1 / tmp2 << std::endl;
-            if (tmp1 / tmp2 > d_threshold) {
-//                std::cout << tmp1 << " " << tmp2 << " " << d_threshold << std::endl;
-                std::cout << tmp1 / tmp2 << std::endl;
+//        bool satellite_file_sink_impl::detect_sine(const std::vector<float> &fft_abs) {
+//            // float tmp1 = std::accumulate(abs_res.begin() + syn_sine_frequency_index - 1, abs_res.begin() + syn_sine_frequency_index + 1, 0.0);
+////            float tmp1 = fft_abs[syn_sine_frequency_index+1] + fft_abs[syn_sine_frequency_index-1] + fft_abs[syn_sine_frequency_index];
+//            float tmp1 = fft_abs[syn_sine_frequency_index];
+//            float tmp2 = std::accumulate(fft_abs.begin(), fft_abs.end(), 0.0) / (d_fft_size + 0.0);  ///accumulate是一个累加函数   这句话是求平均值
+////            printf("tmp1 = %f\n", tmp1);
+////            printf("tmp2 = %f\n", tmp2);
+////            std::cout << tmp1 / tmp2 << std::endl;
+//            if (tmp1 / tmp2 > d_threshold) {
+////                std::cout << tmp1 << " " << tmp2 << " " << d_threshold << std::endl;
+//                std::cout << tmp1 / tmp2 << std::endl;
+//
+//                return true;
+//            }
+//            return false;
+//        }
 
+        bool satellite_file_sink_impl::detect_sine(const std::vector<float> &fft_abs) {
+            float tmp = std::accumulate(fft_abs.begin(), fft_abs.end(), 0.0) / (d_fft_size+ 0.0);
+            if (tmp > d_threshold){
+                std::cout << tmp <<std::endl;
                 return true;
             }
             return false;
         }
-        
+
+
         int
     satellite_file_sink_impl::general_work (int noutput_items,
                        gr_vector_int &ninput_items,
@@ -399,11 +410,11 @@ namespace gr {
             int signal_total_len = 4000;
             int pilot_sine_len = 256;
 
-            while (ret + signal_total_len <= signal_total_len) {
+            while (ret + signal_total_len <= input_items_num) {
                 std::vector<float> first_fft_abs = do_fft(in);
                 if (detect_sine(first_fft_abs)) {
                     struct timeval timer;
-                    gettimeofday(&timer, NULL);
+                    gettimeofday(&timer, NULL);  ///获取时间
                     std::cout << "receive time: " << timer.tv_sec << "s " << timer.tv_usec << "us" << std::endl;
 
                     gr::thread::scoped_lock lock(mutex);
@@ -412,11 +423,11 @@ namespace gr {
                         return noutput_items;
 
                     // 先清空文件
-                    ftruncate(fileno(d_fp), 0);
-                    rewind(d_fp);
+                    ftruncate(fileno(d_fp), 0); ///重新设置文件长度为0
+                    rewind(d_fp);  ///回到d_fp的开头
 
 //                        int t_size = fwrite(in, sizeof(gr_complex), 8512 - 1504 + d_fft_size, d_fp);
-                    int t_size = fwrite(in, sizeof(gr_complex), signal_total_len, d_fp);
+                    int t_size = fwrite(in, sizeof(gr_complex), signal_total_len, d_fp);  ///将in写入d_fp
                     rewind(d_fp);
 
 //                            printf("written data size = %d, file size = %d\n", t_size, file_size);
@@ -434,7 +445,7 @@ namespace gr {
                         throw std::runtime_error(s.str());
                     }
 
-                    if (d_unbuffered) fflush(d_fp);
+                    if (d_unbuffered) fflush(d_fp);  ///清空输入缓存
 
 //                        in = in + 8512 - 1504 + d_fft_size;
 //                        ret += 8512 - 1504 + d_fft_size;
@@ -535,4 +546,6 @@ namespace gr {
 
   } /* namespace roi */
 } /* namespace gr */
+
+
 
