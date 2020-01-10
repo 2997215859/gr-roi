@@ -216,7 +216,6 @@
 #include "satellite_file_sink_impl.h"
 #include <cmath>
 #include <iostream>
-#include <algorithm>
 using namespace std;
 
 
@@ -225,18 +224,18 @@ namespace gr {
 
     satellite_file_sink::sptr
     satellite_file_sink::make(const char *filename, bool append, // used for file sink
-                              float sine_freq, float threshold, // used for detect sine wave whose freq is sine_freq
+                              int ofdm_num, float threshold, // used for detect sine wave whose freq is sine_freq
                               int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads, // used for fft
-                              int latency)
+                              int latency,float power_threshold)
     {
       return gnuradio::get_initial_sptr
-        (new satellite_file_sink_impl(filename, append, sine_freq, threshold, fft_size, forward, window, shift, nthreads, latency));
+        (new satellite_file_sink_impl(filename, append, ofdm_num, threshold, fft_size, forward, window, shift, nthreads, latency, power_threshold));
     }
 
     /*
      * The private constructor
      */
-      satellite_file_sink_impl::satellite_file_sink_impl(const char *filename, bool append, float sine_freq, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads, int latency)
+      satellite_file_sink_impl::satellite_file_sink_impl(const char *filename, bool append, int ofdm_num, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads, int latency, float power_threshold)
               : gr::block("satellite_file_sink",
                           gr::io_signature::make(1, 1, sizeof(gr_complex)),
                           gr::io_signature::make(0, 0, 0)),
@@ -246,21 +245,22 @@ namespace gr {
                 d_forward(forward),
                 d_shift(shift),
 
-                d_sine_freq(sine_freq),
+                d_ofdm_num(ofdm_num),
                 d_threshold(threshold),
 
                 d_latency(latency),
+                d_power_threshold(power_threshold),
 
                 status_file(false),
                 cnt(0)
     {
         std::cout << "Satellite Fiil Sink" << std::endl;
-        set_relative_rate(1.0 / 4000);  ///设置近似输入率（抽取器<1，差值器>1）
+        set_relative_rate(1.0 / 9000);  ///设置近似输入率（抽取器<1，差值器>1）
         d_port = pmt::mp("msg_status_file");
         message_port_register_out(d_port);
 
-        syn_sine_frequency_index = round(d_fft_size - d_fft_size / d_sine_freq);
-        printf("syn_sine_frequency_index = %d, check sine freq = %f \n", syn_sine_frequency_index, sine_freq);
+//        syn_sine_frequency_index = round(d_fft_size - d_fft_size / d_ofdm_num);
+//        printf("syn_sine_frequency_index = %d, check sine freq = %f \n", syn_sine_frequency_index, sine_freq);
         printf("fft_size = %d\n", d_fft_size);
         d_fft = new fft_complex(d_fft_size, forward, nthreads);
         if (!set_window(window)) {
@@ -373,7 +373,15 @@ namespace gr {
 //        }
 
         bool satellite_file_sink_impl::detect_sine(const std::vector<float> &fft_abs) {
-            float tmp = std::accumulate(fft_abs.begin(), fft_abs.end(), 0.0) / (d_fft_size+ 0.0);
+
+
+            std::vector<float> fft_energy;
+            fft_energy.push_back(pow(fft_abs[0], 2));
+            for (int i=1;i<d_fft_size;i++) {
+                fft_energy.push_back(pow(fft_abs[i]*2, 2) );
+            }
+
+            float tmp = std::accumulate(fft_energy.begin(), fft_energy.end(), 0.0) / (d_fft_size+ 0.0);
             if (tmp > d_threshold){
                 std::cout << tmp <<std::endl;
                 return true;
@@ -381,6 +389,17 @@ namespace gr {
             return false;
         }
 
+        bool satellite_file_sink_impl::detect_num(const std::vector<float> &abs_in){
+            std::vector<float> ofdm_power;
+            for(int i=0;i<abs_in.size();i++){
+                ofdm_power.push_back(pow(abs_in[i],2));
+            }
+
+            float power = std::accumulate(ofdm_power.begin(), ofdm_power.end(), 0.0)/(abs_in.size()+0.0);
+            if (power >= d_power_threshold && d_ofdm_num == 8){ return true;}
+            if (power < d_power_threshold && d_ofdm_num == 4){ return true;}
+            return false;
+        }
 
         int
     satellite_file_sink_impl::general_work (int noutput_items,
@@ -402,22 +421,35 @@ namespace gr {
                 return input_items_num;
             }
 
-            while (ret < input_items_num && in[ret].real() < 0.06) {
-                ret = ret + 1;
-                in = in + 1;
-            }
+//            while (ret < input_items_num && in[ret].real() < 0.06) {
+//                ret = ret + 1;
+//                in = in + 1;
+//            }
 
             int signal_total_len = 4000;
-            int pilot_sine_len = 256;
 
             while (ret + signal_total_len <= input_items_num) {
                 std::vector<float> first_fft_abs = do_fft(in);
-                if (detect_sine(first_fft_abs)) {
+                std::vector<float> abs_in;
+                for(int j=2600;j<3500;j++){
+                    abs_in.push_back(abs(in[j]));
+                }
+
+
+                if (detect_sine(first_fft_abs) && detect_num(abs_in)) {
                     struct timeval timer;
                     gettimeofday(&timer, NULL);  ///获取时间
                     std::cout << "receive time: " << timer.tv_sec << "s " << timer.tv_usec << "us" << std::endl;
 
                     gr::thread::scoped_lock lock(mutex);
+
+                    const char * p = reinterpret_cast<const char *>(& first_fft_abs[0]);
+                    FILE * fft_fp = fopen("/tmp/gr_fft_res", "wb");
+                    ftruncate(fileno(fft_fp), 0); ///重新设置文件长度为0
+                    rewind(fft_fp);  ///回到fft_fp的开头
+                    fwrite(p, sizeof(float), d_fft_size, fft_fp);
+                    fclose(fft_fp);
+
                     do_update();
                     if (!d_fp)
                         return noutput_items;
@@ -425,9 +457,9 @@ namespace gr {
                     // 先清空文件
                     ftruncate(fileno(d_fp), 0); ///重新设置文件长度为0
                     rewind(d_fp);  ///回到d_fp的开头
-
+                    int need_signal_len = (d_ofdm_num == 4) ? 2700 : 4000;
 //                        int t_size = fwrite(in, sizeof(gr_complex), 8512 - 1504 + d_fft_size, d_fp);
-                    int t_size = fwrite(in, sizeof(gr_complex), signal_total_len, d_fp);  ///将in写入d_fp
+                    int t_size = fwrite(in, sizeof(gr_complex), need_signal_len, d_fp);  ///将in写入d_fp
                     rewind(d_fp);
 
 //                            printf("written data size = %d, file size = %d\n", t_size, file_size);

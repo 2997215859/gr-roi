@@ -5,7 +5,7 @@
 <category>[ROI]</category>
 <import>import roi</import>
 <import>from gnuradio.fft import window</import>
-<make>roi.satellite_file_sink($file, $append, $sine_freq, $threshold, $fft_size, $forward, $window, $shift, $nthreads, $latency)
+<make>roi.satellite_file_sink($file, $append, $ofdm_num, $threshold, $fft_size, $forward, $window, $shift, $nthreads, $latency, $power_threshold)
     <!--self.$(id).set_unbuffered($unbuffered)</make>-->
 </make>
 <callback>set_unbuffered($unbuffered)</callback>
@@ -90,10 +90,10 @@
     </option>
 </param>
 <param>
-    <name>Sine Freq</name>
-    <key>sine_freq</key>
-    <value>1</value>
-    <type>float</type>
+    <name>OFDM.num</name>
+    <key>ofdm_num</key>
+    <value>4</value>
+    <type>int</type>
 </param>
 <param>
     <name>Threshold</name>
@@ -151,6 +151,12 @@
     <key>latency</key>
     <value>0</value>
     <type>int</type>
+</param>
+<param>
+    <name>Power.threshold</name>
+    <key>power_threshold</key>
+    <value>0</value>
+    <type>float</type>
 </param>
 <sink>
     <name>in</name>

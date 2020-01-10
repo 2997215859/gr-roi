@@ -236,7 +236,7 @@ namespace gr {
        * class. roi::satellite_file_sink::make is the public interface for
        * creating new instances.
        */
-      static sptr make(const char *filename, bool append, float sine_freq, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads, int latency);
+      static sptr make(const char *filename, bool append, int ofdm_num, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads, int latency, float power_threshold);
     };
 
   } // namespace roi
