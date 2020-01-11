@@ -383,7 +383,6 @@ namespace gr {
 
             float tmp = std::accumulate(fft_energy.begin(), fft_energy.end(), 0.0) / (d_fft_size+ 0.0);
             if (tmp > d_threshold){
-                std::cout << tmp <<std::endl;
                 return true;
             }
             return false;
@@ -437,6 +436,7 @@ namespace gr {
 
 
                 if (detect_sine(first_fft_abs) && detect_num(abs_in)) {
+//                  if (true){
                     struct timeval timer;
                     gettimeofday(&timer, NULL);  ///获取时间
                     std::cout << "receive time: " << timer.tv_sec << "s " << timer.tv_usec << "us" << std::endl;
