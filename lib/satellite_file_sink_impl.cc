@@ -372,31 +372,52 @@ namespace gr {
 //            return false;
 //        }
 
-        bool satellite_file_sink_impl::detect_sine(const std::vector<float> &fft_abs) {
+//        bool satellite_file_sink_impl::detect_sine(const std::vector<float> &fft_abs) {
+//
+//
+//            std::vector<float> fft_energy;
+//            fft_energy.push_back(pow(fft_abs[0], 2));
+//            for (int i=1;i<d_fft_size;i++) {
+//                fft_energy.push_back(pow(fft_abs[i]*2, 2) );
+//            }
+//
+//            float tmp = std::accumulate(fft_energy.begin(), fft_energy.end(), 0.0) / (d_fft_size+ 0.0);
+//            if (tmp > d_threshold){
+//                return true;
+//            }
+//            return false;
+//        }
 
-
-            std::vector<float> fft_energy;
-            fft_energy.push_back(pow(fft_abs[0], 2));
-            for (int i=1;i<d_fft_size;i++) {
-                fft_energy.push_back(pow(fft_abs[i]*2, 2) );
-            }
-
-            float tmp = std::accumulate(fft_energy.begin(), fft_energy.end(), 0.0) / (d_fft_size+ 0.0);
-            if (tmp > d_threshold){
-                return true;
+        bool satellite_file_sink_impl::detect_start(const gr_complex *in){
+            for(int d=0;d < 64 - 32;d++){
+                complex<float> temp1 = (0.0,0.0);
+                float temp2 = 0.0;
+                for(int k=0;k<16;k++){
+                    temp1 += conj(in[d+k]) * in[d+k+16];
+                }
+                float temp3 = abs(temp1);
+                for(int k=0;k<32;k++){
+                    temp2 += pow(abs(in[d+k]),2);
+                }
+                if((2*temp3/temp2) >= 0.8) {return true;}
             }
             return false;
         }
 
         bool satellite_file_sink_impl::detect_num(const std::vector<float> &abs_in){
-            std::vector<float> ofdm_power;
-            for(int i=0;i<abs_in.size();i++){
-                ofdm_power.push_back(pow(abs_in[i],2));
+            std::vector<float> ofdm_power1;
+            std::vector<float> ofdm_power2;
+            for(int i=0;i<400;i++){
+                ofdm_power1.push_back(pow(abs_in[i],2));
+            }
+            for(int i=700;i<1600;i++){
+                ofdm_power2.push_back(pow(abs_in[i],2));
             }
 
-            float power = std::accumulate(ofdm_power.begin(), ofdm_power.end(), 0.0)/(abs_in.size()+0.0);
-            if (power >= d_power_threshold && d_ofdm_num == 8){ return true;}
-            if (power < d_power_threshold && d_ofdm_num == 4){ return true;}
+            float power1 = std::accumulate(ofdm_power1.begin(), ofdm_power1.end(), 0.0)/(400 + 0.0);
+            float power2 = std::accumulate(ofdm_power2.begin(), ofdm_power2.end(), 0.0)/(900 + 0.0);
+            if (power1 >= d_power_threshold && power2 >= d_power_threshold && d_ofdm_num == 8){ return true;}
+            if (power1 >= d_power_threshold && power2 < d_power_threshold && d_ofdm_num == 4){ return true;}
             return false;
         }
 
@@ -428,14 +449,14 @@ namespace gr {
             int signal_total_len = 4000;
 
             while (ret + signal_total_len <= input_items_num) {
-                std::vector<float> first_fft_abs = do_fft(in);
+                //std::vector<float> first_fft_abs = do_fft(in);
                 std::vector<float> abs_in;
-                for(int j=2600;j<3500;j++){
+                for(int j=1900;j<3500;j++){
                     abs_in.push_back(abs(in[j]));
                 }
 
 
-                if (detect_sine(first_fft_abs) && detect_num(abs_in)) {
+                if (detect_start(in) && detect_num(abs_in)) {
 //                  if (true){
                     struct timeval timer;
                     gettimeofday(&timer, NULL);  ///获取时间
@@ -443,14 +464,14 @@ namespace gr {
 
                     gr::thread::scoped_lock lock(mutex);
 
-                    const char * p = reinterpret_cast<const char *>(& first_fft_abs[0]);
-                    FILE * fft_fp = fopen("/tmp/gr_fft_res", "wb");
-                    ftruncate(fileno(fft_fp), 0); ///重新设置文件长度为0
-                    rewind(fft_fp);  ///回到fft_fp的开头
-                    fwrite(p, sizeof(float), d_fft_size, fft_fp);
-                    fclose(fft_fp);
-
-                    do_update();
+//                    const char * p = reinterpret_cast<const char *>(& first_fft_abs[0]);
+//                    FILE * fft_fp = fopen("/tmp/gr_fft_res", "wb");
+//                    ftruncate(fileno(fft_fp), 0); ///重新设置文件长度为0
+//                    rewind(fft_fp);  ///回到fft_fp的开头
+//                    fwrite(p, sizeof(float), d_fft_size, fft_fp);
+//                    fclose(fft_fp);
+//
+//                    do_update();
                     if (!d_fp)
                         return noutput_items;
 
@@ -481,13 +502,13 @@ namespace gr {
 
 //                        in = in + 8512 - 1504 + d_fft_size;
 //                        ret += 8512 - 1504 + d_fft_size;
-                    in = in + signal_total_len;
-                    ret += signal_total_len;
+                    in = in + need_signal_len;
+                    ret += need_signal_len;
                     break;
                 }
 
-                in = in + d_fft_size;
-                ret += d_fft_size;
+                in = in + 32;
+                ret += 32;
             }
 
 //            while (ret + signal_total_len < input_items_num) {

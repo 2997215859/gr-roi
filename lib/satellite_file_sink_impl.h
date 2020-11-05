@@ -249,6 +249,7 @@ namespace gr {
 
           bool set_window(const std::vector<float> &window);
           bool detect_sine(const std::vector<float> &fft_abs);
+          bool detect_start(const gr_complex *in);
           bool detect_num(const std::vector<float> &simu_power);
           std::vector<float> do_fft(const gr_complex *in);
 
