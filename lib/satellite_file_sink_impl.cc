@@ -259,6 +259,7 @@ namespace gr {
         message_port_register_out(d_port);
 
         syn_sine_frequency_index = round(d_fft_size - d_fft_size / d_sine_freq);
+        syn_sine_frequency_index2 = round(d_fft_size / d_sine_freq);
         printf("syn_sine_frequency_index = %d, check sine freq = %f \n", syn_sine_frequency_index, sine_freq);
         printf("fft_size = %d\n", d_fft_size);
         d_fft = new fft_complex(d_fft_size, forward, nthreads);
@@ -357,14 +358,15 @@ namespace gr {
         bool satellite_file_sink_impl::detect_sine(const std::vector<float> &fft_abs) {
             // float tmp1 = std::accumulate(abs_res.begin() + syn_sine_frequency_index - 1, abs_res.begin() + syn_sine_frequency_index + 1, 0.0);
 //            float tmp1 = fft_abs[syn_sine_frequency_index+1] + fft_abs[syn_sine_frequency_index-1] + fft_abs[syn_sine_frequency_index];
-            float tmp1 = (fft_abs[syn_sine_frequency_index] + fft_abs[syn_sine_frequency_index - 1] + fft_abs[syn_sine_frequency_index + 1]) / 3.0;
+            float tmp1 = fft_abs[syn_sine_frequency_index];
             float tmp2 = std::accumulate(fft_abs.begin(), fft_abs.end(), 0.0) / (d_fft_size + 0.0);
+            float tmp3 = fft_abs[syn_sine_frequency_index2];
 //            printf("tmp1 = %f\n", tmp1);
 //            printf("tmp2 = %f\n", tmp2);
 //            std::cout << tmp1 / tmp2 << std::endl;
-            if (tmp1 / tmp2 > d_threshold) {
+            if ((tmp1 + tmp3) / tmp2 > d_threshold) {
 //                std::cout << tmp1 << " " << tmp2 << " " << d_threshold << std::endl;
-                std::cout << tmp1 / tmp2 << std::endl;
+                std::cout << (tmp1 + tmp3) / tmp2 << std::endl;
 
                 return true;
             }

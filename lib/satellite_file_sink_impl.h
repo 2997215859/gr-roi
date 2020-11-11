@@ -236,6 +236,7 @@ namespace gr {
           bool status_file; // 标识文件中数据是否有效
 
           int syn_sine_frequency_index;
+          int syn_sine_frequency_index2;
           int cnt;
 
           pmt::pmt_t d_port;
