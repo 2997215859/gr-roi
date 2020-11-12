@@ -389,17 +389,20 @@ namespace gr {
 //        }
 
         bool satellite_file_sink_impl::detect_start(const gr_complex *in){
-            for(int d=0;d < 64 - 32;d++){
+            for(int d=0;d < 200;d++){
                 complex<float> temp1 = (0.0,0.0);
                 float temp2 = 0.0;
                 for(int k=0;k<16;k++){
-                    temp1 += conj(in[d+k]) * in[d+k+16];
+                    temp1 += in[d+k] * conj(in[d+k+16]);
                 }
                 float temp3 = abs(temp1);
-                for(int k=0;k<32;k++){
-                    temp2 += pow(abs(in[d+k]),2);
+                for(int k=0;k<16;k++){
+                    temp2 += pow(abs(in[d+k+16]),2);
                 }
-                if((2*temp3/temp2) >= 0.8) {return true;}
+                if((pow(temp3,2)/pow(temp2,2)) >= 0.8) {
+                    std::cout<< pow(temp3,2)/pow(temp2,2)<<std::endl;
+                    return true;
+                }
             }
             return false;
         }
@@ -456,7 +459,7 @@ namespace gr {
                 }
 
 
-                if (detect_start(in) && detect_num(abs_in)) {
+                if (detect_start(in)) {
 //                  if (true){
                     struct timeval timer;
                     gettimeofday(&timer, NULL);  ///获取时间
@@ -507,8 +510,8 @@ namespace gr {
                     break;
                 }
 
-                in = in + 32;
-                ret += 32;
+                in = in + 200;
+                ret += 200;
             }
 
 //            while (ret + signal_total_len < input_items_num) {
