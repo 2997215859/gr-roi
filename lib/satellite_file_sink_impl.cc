@@ -224,18 +224,18 @@ namespace gr {
 
     satellite_file_sink::sptr
     satellite_file_sink::make(const char *filename, bool append, // used for file sink
-                              int ofdm_num, float threshold, // used for detect sine wave whose freq is sine_freq
+                              int ofdm_num, float up_threshold, float down_threshold, // used for detect sine wave whose freq is sine_freq
                               int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads, // used for fft
                               int latency,float power_threshold)
     {
       return gnuradio::get_initial_sptr
-        (new satellite_file_sink_impl(filename, append, ofdm_num, threshold, fft_size, forward, window, shift, nthreads, latency, power_threshold));
+        (new satellite_file_sink_impl(filename, append, ofdm_num, up_threshold, down_threshold, fft_size, forward, window, shift, nthreads, latency, power_threshold));
     }
 
     /*
      * The private constructor
      */
-      satellite_file_sink_impl::satellite_file_sink_impl(const char *filename, bool append, int ofdm_num, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads, int latency, float power_threshold)
+      satellite_file_sink_impl::satellite_file_sink_impl(const char *filename, bool append, int ofdm_num, float up_threshold, float down_threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads, int latency, float power_threshold)
               : gr::block("satellite_file_sink",
                           gr::io_signature::make(1, 1, sizeof(gr_complex)),
                           gr::io_signature::make(0, 0, 0)),
@@ -246,7 +246,8 @@ namespace gr {
                 d_shift(shift),
 
                 d_ofdm_num(ofdm_num),
-                d_threshold(threshold),
+                d_up_threshold(up_threshold),
+                d_down_threshold(down_threshold),
 
                 d_latency(latency),
                 d_power_threshold(power_threshold),
@@ -255,7 +256,7 @@ namespace gr {
                 cnt(0)
     {
         std::cout << "Satellite Fiil Sink" << std::endl;
-        set_relative_rate(1.0 / 9000);  ///设置近似输入率（抽取器<1，差值器>1）
+        set_relative_rate(1.0 / 8000);  ///设置近似输入率（抽取器<1，差值器>1）
         d_port = pmt::mp("msg_status_file");
         message_port_register_out(d_port);
 
@@ -388,21 +389,79 @@ namespace gr {
 //            return false;
 //        }
 
-        bool satellite_file_sink_impl::detect_start(const gr_complex *in){
-            for(int d=0;d < 200;d++){
-                complex<float> temp1 = (0.0,0.0);
-                float temp2 = 0.0;
-                for(int k=0;k<16;k++){
-                    temp1 += in[d+k] * conj(in[d+k+16]);
+//        float auto_corr(const gr_complex *in, const int &d) {
+//            int delay = 80;
+//            float res = 0.0;
+//            complex<float> temp1 = (0.0, 0.0);
+//            float temp2 = 0.0;
+//            for (int k = 0; k < delay; k++) {
+//                temp1 += in[d + k] * conj(in[d + k + delay]);
+//            }
+//            float temp3 = abs(temp1);
+//            for (int k = 0; k < delay; k++) {
+//                temp2 += pow(abs(in[d + k + delay]), 2);
+//            }
+//            res = pow(temp3, 2) / pow(temp2, 2);
+//            return res;
+//        }
+
+        bool satellite_file_sink_impl::detect_start(const gr_complex *in, const int &ofdm_num){
+            float res1 = 0.0, res2 = 0.0;
+            int delay = 80;
+            for(int d=0;d<80;d++) {
+                complex<float> temp1_1 = (0.0, 0.0);
+                complex<float> temp1_2 = (0.0, 0.0);
+                float temp2_1 = 0.0;
+                float temp2_2 = 0.0;
+                for (int k = 0; k < delay; k++) {
+                    temp1_1 += in[d + k] * conj(in[d + k + delay]);
+                    temp1_2 += in[d + k + 320] * conj(in[d + k + delay +320]);
                 }
-                float temp3 = abs(temp1);
-                for(int k=0;k<16;k++){
-                    temp2 += pow(abs(in[d+k+16]),2);
+                float temp3_1 = abs(temp1_1);
+                float temp3_2 = abs(temp1_2);
+                for (int k = 0; k < delay; k++) {
+                    temp2_1 += pow(abs(in[d + k +delay]), 2);
+                    temp2_2 += pow(abs(in[d + k +delay+320]), 2);
                 }
-                if((pow(temp3,2)/pow(temp2,2)) >= 0.8) {
-                    std::cout<< pow(temp3,2)/pow(temp2,2)<<std::endl;
-                    return true;
+                res1 = pow(temp3_1, 2) / pow(temp2_1, 2);
+                res2 = pow(temp3_2, 2) / pow(temp2_2, 2);
+
+
+                if(res1 >= d_up_threshold && res2 >= d_up_threshold) {
+                    temp1_1 = {0.0,0.0};
+                    temp1_2 = {0.0,0.0};
+                    temp2_1 = 0.0;
+                    temp2_2 = 0.0;
+                    for (int k = 0; k < delay; k++) {
+                        temp1_1 += in[d + k + 2320] * conj(in[d + k + 2320 + delay]);
+                        temp1_2 += in[d + k + 3600] * conj(in[d + k + 3600 + delay]);
+                    }
+                    temp3_1 = abs(temp1_1);
+                    temp3_2 = abs(temp1_2);
+                    for (int k = 0; k < delay; k++) {
+                        temp2_1 += pow(abs(in[d + k + 2320 +delay]), 2);
+                        temp2_2 += pow(abs(in[d + k + 3600 +delay]), 2);
+                    }
+                    res1 = pow(temp3_1, 2) / pow(temp2_1, 2);
+                    res2 = pow(temp3_2, 2) / pow(temp2_2, 2);
+                    if (ofdm_num == 8 && res1 < d_down_threshold && res2 >= d_up_threshold) return true;
+                    else if (ofdm_num == 4 && res1 >=d_up_threshold && res2 < d_down_threshold) return true;
+                    else return false;
+
                 }
+            }
+            return false;
+        }
+
+        bool satellite_file_sink_impl::detect_power(const gr_complex *in){
+            float temp1 = 0.0;
+            int length = 2320;
+            for(int d=0;d < length;d++){
+                temp1 += abs(in[d]) ;
+            }
+            temp1 = temp1 / length;
+            if(temp1 >= d_power_threshold){
+                return true;
             }
             return false;
         }
@@ -444,22 +503,16 @@ namespace gr {
                 return input_items_num;
             }
 
-//            while (ret < input_items_num && in[ret].real() < 0.06) {
-//                ret = ret + 1;
-//                in = in + 1;
-//            }
+            while (ret < input_items_num && abs(in[ret]) < 0.06) {
+                ret = ret + 1;
+                in = in + 1;
+            }
 
             int signal_total_len = 4000;
 
             while (ret + signal_total_len <= input_items_num) {
                 //std::vector<float> first_fft_abs = do_fft(in);
-                std::vector<float> abs_in;
-                for(int j=1900;j<3500;j++){
-                    abs_in.push_back(abs(in[j]));
-                }
-
-
-                if (detect_start(in)) {
+                if (detect_power(in) && detect_start(in, d_ofdm_num)) {
 //                  if (true){
                     struct timeval timer;
                     gettimeofday(&timer, NULL);  ///获取时间
@@ -474,7 +527,7 @@ namespace gr {
 //                    fwrite(p, sizeof(float), d_fft_size, fft_fp);
 //                    fclose(fft_fp);
 //
-//                    do_update();
+                    do_update();
                     if (!d_fp)
                         return noutput_items;
 
@@ -510,8 +563,8 @@ namespace gr {
                     break;
                 }
 
-                in = in + 200;
-                ret += 200;
+                in = in + 80;
+                ret += 80;
             }
 
 //            while (ret + signal_total_len < input_items_num) {

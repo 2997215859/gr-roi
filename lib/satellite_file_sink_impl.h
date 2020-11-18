@@ -231,7 +231,8 @@ namespace gr {
           std::vector<float> d_window;
 
           float d_ofdm_num;
-          float d_threshold;
+          float d_up_threshold;
+          float d_down_threshold;
           float d_power_threshold;
 
           bool status_file; // 标识文件中数据是否有效
@@ -243,14 +244,18 @@ namespace gr {
 
           int d_latency;
 
+
+
       public:
-          satellite_file_sink_impl(const char *filename, bool append, int ofdm_num, float threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads, int latency, float power_threshold);
+          satellite_file_sink_impl(const char *filename, bool append, int ofdm_num, float up_threshold,float down_threshold, int fft_size, bool forward, const std::vector<float> &window, bool shift, int nthreads, int latency, float power_threshold);
           ~satellite_file_sink_impl();
 
           bool set_window(const std::vector<float> &window);
           bool detect_sine(const std::vector<float> &fft_abs);
-          bool detect_start(const gr_complex *in);
+          bool detect_start(const gr_complex *in,const int &ofdm_num);
+          bool detect_power(const gr_complex *in);
           bool detect_num(const std::vector<float> &simu_power);
+
           std::vector<float> do_fft(const gr_complex *in);
 
           bool get_status_file(){return status_file;}
