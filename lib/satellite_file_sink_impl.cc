@@ -433,8 +433,8 @@ namespace gr {
                     temp2_1 = 0.0;
                     temp2_2 = 0.0;
                     for (int k = 0; k < delay; k++) {
-                        temp1_1 += in[d + k + 2320] * conj(in[d + k + 2320 + delay]);
-                        temp1_2 += in[d + k + 3600] * conj(in[d + k + 3600 + delay]);
+                        temp1_1 += in[d + k + 2240] * conj(in[d + k + 2240 + delay]);
+                        temp1_2 += in[d + k + 3520] * conj(in[d + k + 3520 + delay]);
                     }
                     temp3_1 = abs(temp1_1);
                     temp3_2 = abs(temp1_2);
@@ -444,8 +444,8 @@ namespace gr {
                     }
                     res1 = pow(temp3_1, 2) / pow(temp2_1, 2);
                     res2 = pow(temp3_2, 2) / pow(temp2_2, 2);
-                    if (ofdm_num == 8 && res1 < d_down_threshold && res2 >= d_up_threshold) return true;
-                    else if (ofdm_num == 4 && res1 >=d_up_threshold && res2 < d_down_threshold) return true;
+                    if (ofdm_num == 8 && res2 > 2) return true;
+                    else if (ofdm_num == 4 && res1 > 2) return true;
                     else return false;
 
                 }
@@ -455,7 +455,7 @@ namespace gr {
 
         bool satellite_file_sink_impl::detect_power(const gr_complex *in){
             float temp1 = 0.0;
-            int length = 2320;
+            int length = 80;
             for(int d=0;d < length;d++){
                 temp1 += abs(in[d]) ;
             }
