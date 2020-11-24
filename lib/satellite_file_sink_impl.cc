@@ -406,28 +406,34 @@ namespace gr {
 //        }
 
         bool satellite_file_sink_impl::detect_start(const gr_complex *in, const int &ofdm_num){
-            float res1 = 0.0, res2 = 0.0;
+            float res1 = 0.0, res2 = 0.0, res3 = 0.0;
             int delay = 80;
             for(int d=0;d<80;d++) {
                 complex<float> temp1_1 = (0.0, 0.0);
                 complex<float> temp1_2 = (0.0, 0.0);
+                complex<float> temp1_3 = (0.0, 0.0);
                 float temp2_1 = 0.0;
                 float temp2_2 = 0.0;
+                float temp2_3 = 0.0;
                 for (int k = 0; k < delay; k++) {
                     temp1_1 += in[d + k] * conj(in[d + k + delay]);
                     temp1_2 += in[d + k + 320] * conj(in[d + k + delay +320]);
+                    temp1_3 += in[d + k + 160] * conj(in[d + k + delay +160]);
                 }
                 float temp3_1 = abs(temp1_1);
                 float temp3_2 = abs(temp1_2);
+                float temp3_3 = abs(temp1_3);
                 for (int k = 0; k < delay; k++) {
                     temp2_1 += pow(abs(in[d + k +delay]), 2);
                     temp2_2 += pow(abs(in[d + k +delay+320]), 2);
+                    temp2_3 += pow(abs(in[d + k +delay+160]), 2);
                 }
                 res1 = pow(temp3_1, 2) / pow(temp2_1, 2);
                 res2 = pow(temp3_2, 2) / pow(temp2_2, 2);
+                res3 = pow(temp3_3, 2) / pow(temp2_3, 2);
 
 
-                if(res1 >= d_up_threshold && res2 >= d_up_threshold) {
+                if(res1 >= d_up_threshold && res2 >= d_up_threshold && res3 < d_down_threshold) {
                     temp1_1 = {0.0,0.0};
                     temp1_2 = {0.0,0.0};
                     temp2_1 = 0.0;
