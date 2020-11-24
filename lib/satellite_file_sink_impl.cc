@@ -256,7 +256,7 @@ namespace gr {
                 cnt(0)
     {
         std::cout << "Satellite Fiil Sink" << std::endl;
-        set_relative_rate(1.0 / 8000);  ///设置近似输入率（抽取器<1，差值器>1）
+        set_relative_rate(1.0 / 4000);  ///设置近似输入率（抽取器<1，差值器>1）
         d_port = pmt::mp("msg_status_file");
         message_port_register_out(d_port);
 
@@ -444,8 +444,8 @@ namespace gr {
                     }
                     res1 = pow(temp3_1, 2) / pow(temp2_1, 2);
                     res2 = pow(temp3_2, 2) / pow(temp2_2, 2);
-                    if (ofdm_num == 8 && res2 > 2) return true;
-                    else if (ofdm_num == 4 && res1 > 2) return true;
+                    if (ofdm_num == 8 && res2 > 5 && res1 < d_down_threshold) return true;
+                    else if (ofdm_num == 4 && res1 > 5) return true;
                     else return false;
 
                 }
