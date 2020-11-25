@@ -256,7 +256,7 @@ namespace gr {
                 cnt(0)
     {
         std::cout << "Satellite Fiil Sink" << std::endl;
-        set_relative_rate(1.0 / 4000);  ///设置近似输入率（抽取器<1，差值器>1）
+        set_relative_rate(1.0 / 9000);  ///设置近似输入率（抽取器<1，差值器>1）
         d_port = pmt::mp("msg_status_file");
         message_port_register_out(d_port);
 
